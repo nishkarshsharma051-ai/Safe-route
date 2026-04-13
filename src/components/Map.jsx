@@ -23,20 +23,54 @@ export default function Map({ userCoords, hazards, routes, selectedRouteIndex, r
   // Init map
   useEffect(() => {
     if (mapRef.current) return;
-    mapRef.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      center: [-73.9857, 40.7484],
-      zoom: 13,
-      pitch: 35,
-      attributionControl: false,
-    });
-    mapRef.current.addControl(new mapboxgl.AttributionControl({ compact: true }));
-    mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
+    
+    // List of styles to try in order of preference
+    const stylesToTry = [
+      'mapbox://styles/mapbox/dark-v11',
+      'mapbox://styles/mapbox/dark-v10',
+      'mapbox://styles/mapbox/streets-v12'
+    ];
+    let styleIndex = 0;
 
-    mapRef.current.on('load', () => {
-      setupUserLayers(mapRef.current);
-    });
+    const initMap = (styleUrl) => {
+      try {
+        console.log(`Attempting to load map style: ${styleUrl}`);
+        mapRef.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: styleUrl,
+          center: [-73.9857, 40.7484],
+          zoom: 13,
+          pitch: 35,
+          attributionControl: false,
+        });
+
+        mapRef.current.on('error', (e) => {
+          console.error('Mapbox rendering error:', e);
+          // If style fails to load, try next one
+          if (e.error?.status === 401 || e.error?.status === 403 || e.message?.includes('Style')) {
+            if (styleIndex < stylesToTry.length - 1) {
+              console.warn('Style failed to load, trying fallback...');
+              styleIndex++;
+              mapRef.current.remove();
+              mapRef.current = null;
+              initMap(stylesToTry[styleIndex]);
+            }
+          }
+        });
+
+        mapRef.current.addControl(new mapboxgl.AttributionControl({ compact: true }));
+        mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
+
+        mapRef.current.on('load', () => {
+          console.log('Mapbox loaded successfully with style:', styleUrl);
+          setupUserLayers(mapRef.current);
+        });
+      } catch (err) {
+        console.error('Failed to initialize map object:', err);
+      }
+    };
+
+    initMap(stylesToTry[styleIndex]);
 
     return () => { mapRef.current?.remove(); mapRef.current = null; };
   }, []);

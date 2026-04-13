@@ -1,5 +1,5 @@
 // Mapbox API calls — Geocoding & Directions
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z3gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z3gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
 
 /**
  * Geocode a text query to coordinates using Mapbox Geocoding API

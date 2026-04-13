@@ -26,16 +26,26 @@
 }
 
 .gpsCard {
-  display: flex; align-items: center; gap: 14px;
-  background: var(--bg-glass); backdrop-filter: blur(16px);
-  border: 1px solid var(--border); border-radius: var(--radius-lg);
-  padding: 20px 28px; font-size: 15px; font-weight: 600;
-  box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 18px;
+  background: var(--bg-glass); backdrop-filter: blur(24px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+  padding: 24px 32px; box-shadow: var(--shadow-lg);
 }
 
+.gpsInfo { display: flex; flex-direction: column; gap: 6px; }
+.gpsInfo span { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+
+.skipBtn {
+  background: transparent; border: none; padding: 0;
+  color: var(--accent-info); font-size: 12px; font-weight: 600;
+  text-decoration: underline; text-align: left; opacity: 0.8;
+  transition: var(--transition);
+}
+.skipBtn:hover { opacity: 1; color: var(--text-primary); }
+
 .gpsSpinner {
-  width: 20px; height: 20px;
-  border: 2.5px solid var(--border-strong);
+  width: 24px; height: 24px;
+  border: 3px solid var(--border-strong);
   border-top-color: var(--accent-safe);
   border-radius: 50%; animation: spin 0.8s linear infinite;
 }

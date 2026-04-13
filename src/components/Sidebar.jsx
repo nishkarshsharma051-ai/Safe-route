@@ -98,8 +98,16 @@ export default function Sidebar({
         {activeTab === 'alerts' && (
           <div className={styles.pane}>
             <div className={styles.sectionTitle}>ACTIVE HAZARD ALERTS</div>
-            {hazards.length === 0 && <p className={styles.emptyState}>No active hazards detected near your location.</p>}
-            {hazards.map(h => {
+            {routing.loading && (
+              <div className={styles.loadingState}>
+                <div className={styles.spinner} />
+                <span>Checking live alerts...</span>
+              </div>
+            )}
+            {!routing.loading && hazards.length === 0 && (
+              <p className={styles.emptyState}>No immediate hazards detected near your location.</p>
+            )}
+            {!routing.loading && hazards.map(h => {
               const color = SEVERITY_COLOR[h.severity] || '#f59e0b';
               return (
                 <div key={h.id} className={styles.fullAlertCard} style={{ borderColor: `${color}30` }}>

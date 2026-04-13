@@ -17,61 +17,72 @@ const WEATHER_CONDITION_MAP = {
  * @returns {Promise<{weather: object, hazards: Array}>}
  */
 export async function fetchWeatherHazards(lat, lon) {
-  if (!OWM_KEY) {
-    // Demo mode — return simulated weather based on random conditions
+  if (!OWM_KEY || OWM_KEY === 'your_openweathermap_api_key_here' || OWM_KEY === '') {
     return getDemoWeather(lat, lon);
   }
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Weather API error');
-  const data = await res.json();
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`;
+    const res = await fetch(url);
+    
+    // If the key is not yet active (OWM often takes 30-60 mins), fallback to demo mode
+    if (res.status === 401 || res.status === 403) {
+      console.warn('Weather API key not yet active. Falling back to Demo Mode.');
+      return getDemoWeather(lat, lon);
+    }
+    
+    if (!res.ok) throw new Error('Weather API error');
+    const data = await res.json();
 
-  const conditionId = Math.floor(data.weather[0].id / 100);
-  const hazards = [];
-  const mapped = WEATHER_CONDITION_MAP[conditionId];
+    const conditionId = Math.floor(data.weather[0].id / 100);
+    const hazards = [];
+    const mapped = WEATHER_CONDITION_MAP[conditionId];
 
-  if (mapped) {
-    hazards.push({
-      id: `wx-${Date.now()}`,
-      name: mapped.name,
-      type: mapped.type,
-      severity: mapped.severity,
-      description: data.weather[0].description,
-      recommendation: mapped.recommendation,
-      coords: [lon + 0.01, lat - 0.01],
-      isWeatherDerived: true,
-    });
+    if (mapped) {
+      hazards.push({
+        id: `wx-${Date.now()}`,
+        name: mapped.name,
+        type: mapped.type,
+        severity: mapped.severity,
+        description: data.weather[0].description,
+        recommendation: mapped.recommendation,
+        coords: [lon + 0.01, lat - 0.01],
+        isWeatherDerived: true,
+      });
+    }
+
+    // High wind speed
+    if (data.wind?.speed > 15) {
+      hazards.push({
+        id: `wx-wind-${Date.now()}`,
+        name: 'High Wind Advisory',
+        type: 'wind',
+        severity: data.wind.speed > 25 ? 'EXTREME' : 'HIGH',
+        description: `Sustained winds at ${Math.round(data.wind.speed * 3.6)} km/h`,
+        recommendation: 'Seek shelter from wind. Danger of falling branches.',
+        coords: [lon - 0.01, lat + 0.01],
+        isWeatherDerived: true,
+      });
+    }
+
+    return {
+      weather: {
+        city: data.name,
+        country: data.sys?.country,
+        temp: Math.round(data.main?.temp),
+        feels_like: Math.round(data.main?.feels_like),
+        description: data.weather[0]?.description,
+        humidity: data.main?.humidity,
+        windSpeed: Math.round((data.wind?.speed || 0) * 3.6),
+        icon: data.weather[0]?.icon,
+        demoMode: false,
+      },
+      hazards,
+    };
+  } catch (err) {
+    console.error('Weather fetch error:', err);
+    return getDemoWeather(lat, lon);
   }
-
-  // High wind speed
-  if (data.wind?.speed > 15) {
-    hazards.push({
-      id: `wx-wind-${Date.now()}`,
-      name: 'High Wind Advisory',
-      type: 'wind',
-      severity: data.wind.speed > 25 ? 'EXTREME' : 'HIGH',
-      description: `Sustained winds at ${Math.round(data.wind.speed * 3.6)} km/h`,
-      recommendation: 'Seek shelter from wind. Danger of falling branches.',
-      coords: [lon - 0.01, lat + 0.01],
-      isWeatherDerived: true,
-    });
-  }
-
-  return {
-    weather: {
-      city: data.name,
-      country: data.sys?.country,
-      temp: Math.round(data.main?.temp),
-      feels_like: Math.round(data.main?.feels_like),
-      description: data.weather[0]?.description,
-      humidity: data.main?.humidity,
-      windSpeed: Math.round((data.wind?.speed || 0) * 3.6),
-      icon: data.weather[0]?.icon,
-      demoMode: false,
-    },
-    hazards,
-  };
 }
 
 function getDemoWeather(lat, lon) {

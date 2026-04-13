@@ -130,11 +130,19 @@ export default function App() {
           />
 
           {/* GPS Loading Overlay */}
-          {gpsLoading && (
+          {gpsLoading && !userCoords && (
             <div className={styles.gpsOverlay}>
               <div className={styles.gpsCard}>
                 <div className={styles.gpsSpinner} />
-                <span>Acquiring GPS location...</span>
+                <div className={styles.gpsInfo}>
+                  <span>Acquiring GPS location...</span>
+                  <button 
+                    onClick={() => handleDestinationSelect({ coords: [-73.9857, 40.7484], place_name: 'NYC Fallback' })} 
+                    className={styles.skipBtn}
+                  >
+                    Skip & use default location
+                  </button>
+                </div>
               </div>
             </div>
           )}
