@@ -49,19 +49,95 @@
 
 /* Route Cards */
 .routeCard {
-  padding: 14px; border-radius: var(--radius-md);
-  border: 1px solid var(--border); cursor: pointer;
-  transition: var(--transition); background: transparent;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 12px;
 }
-.routeCard:hover { background: var(--bg-tertiary); border-color: var(--border-strong); }
-.activeRoute { background: var(--accent-safe-dim); border-color: var(--accent-safe); }
 
-.routeHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.routeLabel { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; }
-.safetyScore { font-size: 11px; font-weight: 800; }
-.routeMeta { font-size: 12px; color: var(--text-tertiary); margin-bottom: 8px; }
+.routeCard:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.activeRoute {
+  border-color: var(--accent-safe);
+  background: var(--accent-safe-dim);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
+
+.routeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.routeLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+}
+
+.activeRoute .routeLabel { color: var(--accent-safe); }
+
+.safetyScore {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.routeMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.dotSeparator {
+  font-size: 16px;
+  color: var(--text-tertiary);
+  line-height: 1;
+}
+
+.bestBadge {
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: var(--accent-safe);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+
 .safetyBar { height: 3px; background: var(--bg-tertiary); border-radius: 10px; overflow: hidden; }
 .safetyFill { height: 100%; border-radius: 10px; transition: width 0.6s ease; }
+
+.routeHazards {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-hazard);
+}
+
+.safetyReason {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
 
 /* Alert Cards */
 .alertCard { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--accent-hazard-dim); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-md); }

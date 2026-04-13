@@ -6,8 +6,8 @@ const WEATHER_CONDITION_MAP = {
   3: { name: 'Heavy Drizzle', type: 'flood', severity: 'MODERATE', recommendation: 'Roads may be slippery. Reduce speed and avoid tunnels.' },
   5: { name: 'Heavy Rain', type: 'flood', severity: 'HIGH', recommendation: 'Flash flood risk. Move to higher ground.' },
   6: { name: 'Snowstorm', type: 'snow', severity: 'HIGH', recommendation: 'Avoid travel. If driving, use chains and stay on main roads.' },
-  7: { name: 'Extreme Fog', type: 'visibility', severity: 'MODERATE', recommendation: 'Drive with fog lights. Maintain safe following distance.' },
-  9: { name: 'Extreme Winds', type: 'wind', severity: 'HIGH', recommendation: 'Danger of falling debris. Avoid tall trees and structures.' },
+  7: { name: 'Aerosol Hazard', type: 'visibility', severity: 'MODERATE', recommendation: 'Ash/Dust/Sand detected. Use N95 mask and stay indoors.' },
+  9: { name: 'Severe Storm', type: 'wind', severity: 'EXTREME', recommendation: 'Tornado/Squall warning. Move to basement or interior room.' },
 };
 
 /**
@@ -46,7 +46,7 @@ export async function fetchWeatherHazards(lat, lon) {
         severity: mapped.severity,
         description: data.weather[0].description,
         recommendation: mapped.recommendation,
-        coords: [lon + 0.01, lat - 0.01],
+        coords: [lon + 0.005, lat - 0.005],
         isWeatherDerived: true,
       });
     }
@@ -60,7 +60,21 @@ export async function fetchWeatherHazards(lat, lon) {
         severity: data.wind.speed > 25 ? 'EXTREME' : 'HIGH',
         description: `Sustained winds at ${Math.round(data.wind.speed * 3.6)} km/h`,
         recommendation: 'Seek shelter from wind. Danger of falling branches.',
-        coords: [lon - 0.01, lat + 0.01],
+        coords: [lon - 0.008, lat + 0.008],
+        isWeatherDerived: true,
+      });
+    }
+
+    // Extreme heat
+    if (data.main?.temp > 35) {
+      hazards.push({
+        id: `wx-heat-${Date.now()}`,
+        name: 'Extreme Heat Warning',
+        type: 'fire',
+        severity: data.main.temp > 40 ? 'EXTREME' : 'HIGH',
+        description: `Dangerous temperature of ${Math.round(data.main.temp)}°C detected.`,
+        recommendation: 'Stay hydrated. Avoid direct sunlight. Check on elderly.',
+        coords: [lon + 0.01, lat + 0.01],
         isWeatherDerived: true,
       });
     }
@@ -86,46 +100,51 @@ export async function fetchWeatherHazards(lat, lon) {
 }
 
 function getDemoWeather(lat, lon) {
+  // Use NYC offsets if no specific lat/lon
+  const bLat = lat || 40.7484;
+  const bLon = lon || -73.9857;
+
   return {
     weather: {
       city: 'Your Location',
-      temp: 22,
-      description: 'partly cloudy',
-      humidity: 65,
-      windSpeed: 18,
+      temp: 36,
+      description: 'clear sky',
+      humidity: 45,
+      windSpeed: 22,
       demoMode: true,
     },
     hazards: [
       {
         id: 'demo-flood',
-        name: 'Flash Flood Warning',
+        name: 'Coastal Surge Warning',
         type: 'flood',
         severity: 'HIGH',
-        description: 'Heavy rainfall reported upstream. Flooding risk in low-lying areas.',
-        recommendation: 'Move to higher ground. Avoid crossing flooded roads.',
-        coords: [lon + 0.03, lat - 0.02],
+        description: 'Rising water levels detected near battery park area.',
+        recommendation: 'Move to higher ground. Avoid low-lying coastal paths.',
+        coords: [bLon - 0.012, bLat - 0.015],
         isWeatherDerived: true,
       },
       {
         id: 'demo-fire',
-        name: 'Wildfire Alert',
+        name: 'Structural Fire Alert',
         type: 'fire',
         severity: 'EXTREME',
-        description: 'Active fire reported. Smoke visible from multiple districts.',
-        recommendation: 'Evacuate immediately upwind. Close all air vents.',
-        coords: [lon - 0.04, lat + 0.03],
+        description: 'Large industrial fire reported in nearby textile district.',
+        recommendation: 'Evacuate immediately upwind. Close air vents.',
+        coords: [bLon + 0.015, bLat + 0.012],
         isWeatherDerived: true,
       },
       {
         id: 'demo-wind',
-        name: 'Wind Advisory',
+        name: 'High Wind Advisory',
         type: 'wind',
         severity: 'MODERATE',
-        description: 'Gusts up to 65 km/h reported near coastal areas.',
-        recommendation: 'Secure loose objects. Avoid open elevated areas.',
-        coords: [lon + 0.02, lat + 0.04],
+        description: 'Gusts up to 75 km/h reported. Hazard for high-profile vehicles.',
+        recommendation: 'Secure loose objects. Stay away from trees.',
+        coords: [bLon + 0.02, bLat - 0.005],
         isWeatherDerived: true,
       },
     ],
   };
 }
+

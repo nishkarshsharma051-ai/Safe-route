@@ -66,14 +66,31 @@ export default function Sidebar({
               >
                 <div className={styles.routeHeader}>
                   <span className={styles.routeLabel}>{r.label}</span>
-                  <span className={styles.safetyScore} style={{ color: r.safetyScore > 80 ? '#10b981' : r.safetyScore > 60 ? '#f59e0b' : '#ef4444' }}>
+                  <span className={styles.safetyScore} style={{ color: r.safetyScore > 80 ? 'var(--accent-safe)' : r.safetyScore > 60 ? 'var(--accent-warning)' : 'var(--accent-hazard)' }}>
                     {r.safetyScore}% SAFE
                   </span>
                 </div>
-                <div className={styles.routeMeta}>{r.durationMin} min · {r.distanceKm} km</div>
-                <div className={styles.safetyBar}>
-                  <div className={styles.safetyFill} style={{ width: `${r.safetyScore}%`, background: r.safetyScore > 80 ? '#10b981' : r.safetyScore > 60 ? '#f59e0b' : '#ef4444' }} />
+                <div className={styles.routeMeta}>
+                  <span>{r.durationMin} min</span>
+                  <span className={styles.dotSeparator}>•</span>
+                  <span>{r.distanceKm} km</span>
+                  {i === 0 && r.safetyScore > 90 && <span className={styles.bestBadge}>Best Path</span>}
                 </div>
+                <div className={styles.safetyBar}>
+                  <div className={styles.safetyFill} style={{ width: `${r.safetyScore}%`, background: r.safetyScore > 80 ? 'var(--accent-safe)' : r.safetyScore > 60 ? 'var(--accent-warning)' : 'var(--accent-hazard)' }} />
+                </div>
+                {r.nearbyHazards && r.nearbyHazards.length > 0 && (
+                  <div className={styles.routeHazards}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>{r.nearbyHazards.length} nearby alerts detected</span>
+                  </div>
+                )}
+                {i === 0 && r.safetyScore >= 95 && (
+                  <div className={styles.safetyReason}>Clear of all major incidents.</div>
+                )}
+                {r.nearbyHazards && r.nearbyHazards.length > 0 && i === 0 && (
+                  <div className={styles.safetyReason}>Optimized to avoid active {r.nearbyHazards[0].type} zone.</div>
+                )}
               </div>
             ))}
 

@@ -1,9 +1,6 @@
-import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import { MAPBOX_TOKEN } from '../services/mapbox';
+import { useEffect, useRef, useState } from 'react';
+import maplibregl from 'maplibre-gl';
 import styles from './Map.module.css';
-
-mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const HAZARD_COLORS = {
   flood: '#3b82f6',
@@ -15,64 +12,109 @@ const HAZARD_COLORS = {
   default: '#ef4444',
 };
 
+const BASEMAP_STYLE = {
+  version: 8,
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '&copy; OpenStreetMap contributors',
+    },
+  },
+  layers: [
+    {
+      id: 'osm',
+      type: 'raster',
+      source: 'osm',
+    },
+  ],
+};
+
 export default function Map({ userCoords, hazards, routes, selectedRouteIndex, resources }) {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState('');
   const markersRef = useRef({ hazards: [], resources: [], popups: [] });
 
   // Init map
   useEffect(() => {
-    if (mapRef.current) return;
-    
-    // List of styles to try in order of preference
-    const stylesToTry = [
-      'mapbox://styles/mapbox/dark-v11',
-      'mapbox://styles/mapbox/dark-v10',
-      'mapbox://styles/mapbox/streets-v12'
-    ];
-    let styleIndex = 0;
+    if (mapRef.current || !mapContainer.current) return;
 
-    const initMap = (styleUrl) => {
+    const initMap = () => {
       try {
-        console.log(`Attempting to load map style: ${styleUrl}`);
-        mapRef.current = new mapboxgl.Map({
+        if (!mapContainer.current) return;
+        
+        // Final sanity check for WebGL support to prevent browser-level crashes
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+          console.error('WebGL not supported');
+          setMapError('This browser does not support WebGL, so the map cannot be displayed.');
+          setMapLoaded(true);
+          return;
+        }
+
+        const map = new maplibregl.Map({
           container: mapContainer.current,
-          style: styleUrl,
+          style: BASEMAP_STYLE,
           center: [-73.9857, 40.7484],
-          zoom: 13,
-          pitch: 35,
+          zoom: 12,
+          pitch: 30,
           attributionControl: false,
+          antialias: true,
+          fadeDuration: 0
         });
 
-        mapRef.current.on('error', (e) => {
-          console.error('Mapbox rendering error:', e);
-          // If style fails to load, try next one
-          if (e.error?.status === 401 || e.error?.status === 403 || e.message?.includes('Style')) {
-            if (styleIndex < stylesToTry.length - 1) {
-              console.warn('Style failed to load, trying fallback...');
-              styleIndex++;
-              mapRef.current.remove();
-              mapRef.current = null;
-              initMap(stylesToTry[styleIndex]);
-            }
+        mapRef.current = map;
+
+        map.addControl(new maplibregl.AttributionControl({ compact: true }));
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+
+        map.on('style.load', () => {
+          map.resize();
+        });
+
+        map.once('load', () => {
+          setMapError('');
+          setMapLoaded(true);
+          setupUserLayers(map);
+          map.resize();
+        });
+
+        map.on('error', (e) => {
+          console.error('Mapbox Error:', e);
+          if (!mapLoaded) {
+            setMapError('The map could not be loaded. The rest of the safety tools are still available.');
+            setMapLoaded(true);
           }
         });
 
-        mapRef.current.addControl(new mapboxgl.AttributionControl({ compact: true }));
-        mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
-
-        mapRef.current.on('load', () => {
-          console.log('Mapbox loaded successfully with style:', styleUrl);
-          setupUserLayers(mapRef.current);
-        });
+        const handleResize = () => map.resize();
+        window.addEventListener('resize', handleResize);
+        
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          map.remove();
+        };
       } catch (err) {
-        console.error('Failed to initialize map object:', err);
+        console.error('Failed to initialize Mapbox context:', err);
+        setMapError('This browser could not initialize the map canvas.');
+        setMapLoaded(true);
       }
     };
 
-    initMap(stylesToTry[styleIndex]);
+    // Small delay to ensure React has fully committed the DOM ref
+    const timer = setTimeout(initMap, 50);
 
-    return () => { mapRef.current?.remove(); mapRef.current = null; };
+    return () => {
+      clearTimeout(timer);
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
   }, []);
 
   // Update user location
@@ -102,6 +144,29 @@ export default function Map({ userCoords, hazards, routes, selectedRouteIndex, r
 
     hazards.forEach(h => {
       const color = HAZARD_COLORS[h.type] || HAZARD_COLORS.default;
+      
+      // Add hazard glow layers to map
+      if (mapRef.current.loaded()) {
+        const sourceId = `glow-src-${h.id}`;
+        if (!mapRef.current.getSource(sourceId)) {
+          mapRef.current.addSource(sourceId, {
+            type: 'geojson',
+            data: { type: 'Feature', geometry: { type: 'Point', coordinates: h.coords } }
+          });
+          mapRef.current.addLayer({
+            id: `glow-layer-${h.id}`,
+            type: 'circle',
+            source: sourceId,
+            paint: {
+              'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 50, 15, 200],
+              'circle-color': color,
+              'circle-opacity': 0.1,
+              'circle-blur': 0.8
+            }
+          });
+        }
+      }
+
       const el = document.createElement('div');
       el.className = styles.hazardMarker;
       el.style.setProperty('--color', color);
@@ -113,20 +178,32 @@ export default function Map({ userCoords, hazards, routes, selectedRouteIndex, r
           <circle cx="12" cy="17" r="1" fill="white"/>
         </svg>`;
 
-      const popup = new mapboxgl.Popup({ closeButton: false, offset: 15 })
+      const popup = new maplibregl.Popup({ closeButton: false, offset: 15 })
         .setHTML(`
-          <div style="padding:8px 4px">
+          <div class="${styles.hazardPopup}">
             <div style="color:${color};font-weight:800;font-size:10px;letter-spacing:.08em;margin-bottom:4px">${h.severity} ALERT</div>
             <div style="font-weight:700;font-size:14px;margin-bottom:4px">${h.name}</div>
-            <div style="font-size:12px;color:#9090a0;line-height:1.4">${h.recommendation}</div>
+            <div style="font-size:12px;color:#9090a0;line-height:1.4">${h.recommendation || h.description}</div>
           </div>`);
 
       el.addEventListener('mouseenter', () => popup.setLngLat(h.coords).addTo(mapRef.current));
       el.addEventListener('mouseleave', () => popup.remove());
 
-      const marker = new mapboxgl.Marker(el).setLngLat(h.coords).addTo(mapRef.current);
+      const marker = new maplibregl.Marker(el).setLngLat(h.coords).addTo(mapRef.current);
       markersRef.current.hazards.push(marker);
     });
+
+    // Cleanup glow layers on hazard change
+    return () => {
+      if (mapRef.current) {
+        hazards.forEach(h => {
+          const id = `glow-layer-${h.id}`;
+          const sid = `glow-src-${h.id}`;
+          if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
+          if (mapRef.current.getSource(sid)) mapRef.current.removeSource(sid);
+        });
+      }
+    };
   }, [hazards]);
 
   // Render routes
@@ -172,9 +249,9 @@ export default function Map({ userCoords, hazards, routes, selectedRouteIndex, r
     resources.forEach(r => {
       const el = document.createElement('div');
       el.className = styles.resourceMarker;
-      const marker = new mapboxgl.Marker(el)
+      const marker = new maplibregl.Marker(el)
         .setLngLat(r.coords)
-        .setPopup(new mapboxgl.Popup({ closeButton: true }).setHTML(
+        .setPopup(new maplibregl.Popup({ closeButton: true }).setHTML(
           `<div style="padding:8px 4px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">${r.name}</div>
            <div style="font-size:12px;color:#9090a0">${r.type}</div>
            ${r.phone ? `<div style="font-size:12px;margin-top:4px">📞 ${r.phone}</div>` : ''}
@@ -184,7 +261,18 @@ export default function Map({ userCoords, hazards, routes, selectedRouteIndex, r
     });
   }, [resources]);
 
-  return <div ref={mapContainer} className={styles.map} />;
+  return (
+    <div className={styles.mapWrapper}>
+      {!mapLoaded && (
+        <div className={styles.mapLoader}>
+          <div className={styles.spinner} />
+          <span>Loading live map...</span>
+        </div>
+      )}
+      <div ref={mapContainer} className={styles.map} />
+      {mapError && <div className={styles.mapError}>{mapError}</div>}
+    </div>
+  );
 }
 
 function setupUserLayers(map, coords = [-73.9857, 40.7484]) {

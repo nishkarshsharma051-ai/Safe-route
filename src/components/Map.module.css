@@ -1,7 +1,58 @@
+.mapWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .map {
   width: 100%;
   height: 100%;
+  background-color: #0c0c12;
 }
+
+.mapLoader {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mapError {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 88px;
+  padding: 14px 16px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 16px;
+  background: rgba(24, 10, 10, 0.92);
+  color: #fecaca;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  z-index: 12;
+  backdrop-filter: blur(12px);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-strong);
+  border-top-color: var(--accent-safe);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .hazardMarker {
   position: relative;
@@ -33,15 +84,22 @@
   cursor: pointer;
 }
 
-:global(.mapboxgl-popup-content) {
-  background: #16161a !important;
-  color: #f0f0f5 !important;
-  border: 1px solid rgba(255,255,255,0.07) !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.8) !important;
+.hazardPopup {
+  padding: 8px 4px;
 }
 
-:global(.mapboxgl-popup-tip) {
-  border-top-color: rgba(255,255,255,0.07) !important;
+:global(.mapboxgl-popup-content),
+:global(.maplibregl-popup-content) {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 12px !important;
+  box-shadow: var(--shadow-lg) !important;
+  backdrop-filter: blur(12px);
+}
+
+:global(.mapboxgl-popup-tip),
+:global(.maplibregl-popup-tip) {
+  border-top-color: var(--border-strong) !important;
 }

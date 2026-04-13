@@ -16,28 +16,38 @@
 .brandName {
   font-size: 20px; font-weight: 900; letter-spacing: -0.04em;
   background: linear-gradient(135deg, #fff 0%, #8080a0 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .searchWrap {
   flex: 1;
   max-width: 480px;
-  height: 42px;
-  border-radius: var(--radius-md);
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 14px;
+  gap: 12px;
+  padding: 0 16px;
+  border-radius: var(--radius-full);
+  transition: var(--transition);
   position: relative;
 }
 
+.searchWrap:focus-within {
+  border-color: var(--accent-info);
+  box-shadow: 0 0 0 3px var(--accent-info-dim);
+  background: var(--bg-secondary);
+}
+
 .searchInput {
+  flex: 1;
   background: transparent;
   border: none;
   outline: none;
   color: var(--text-primary);
   font-size: 14px;
-  flex: 1;
+  font-weight: 500;
 }
 
 .searchInput::placeholder { color: var(--text-tertiary); }
@@ -56,12 +66,18 @@
 .suggestions {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0; right: 0;
-  border-radius: var(--radius-md);
-  list-style: none;
+  left: 0;
+  right: 0;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  z-index: 200;
-  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  padding: 8px 0;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .suggestion {

@@ -28,6 +28,7 @@ export default function App() {
     catch { return {}; }
   });
   const [gpsToast, setGpsToast] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
 
   // Online/offline detection
   useEffect(() => {
@@ -38,13 +39,26 @@ export default function App() {
     return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
   }, []);
 
+  // Auto-hide GPS loading if it takes too long (e.g. 5s) to prevent black screen
+  useEffect(() => {
+    if (gpsLoading && !userCoords) {
+      const timer = setTimeout(() => {
+        setUseFallback(true);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [gpsLoading, userCoords]);
+
+  // Derived Effective Coords
+  const effectiveCoords = userCoords || (useFallback ? { lat: 40.7484, lng: -73.9857 } : null);
+
   // Show GPS acquired toast once
   useEffect(() => {
-    if (userCoords && !gpsLoading) {
+    if (userCoords && !gpsLoading && !gpsToast) {
       setGpsToast(true);
       setTimeout(() => setGpsToast(false), 3000);
     }
-  }, [!!userCoords]);
+  }, [userCoords, gpsLoading]);
 
   // Auto-refresh weather every 5 mins is handled in useWeather, but also on tab focus
   useEffect(() => {
@@ -54,9 +68,9 @@ export default function App() {
   }, [refreshWeather]);
 
   const handleDestinationSelect = useCallback(async (place) => {
-    if (!userCoords) return;
-    routing.calculate(userCoords, place);
-  }, [userCoords, routing.calculate]);
+    const startCoords = effectiveCoords || { lat: 40.7484, lng: -73.9857 };
+    routing.calculate(startCoords, place);
+  }, [effectiveCoords, routing.calculate]);
 
   const handleSelectRoute = useCallback((i) => {
     setSelectedRouteIndex(i);
@@ -129,15 +143,15 @@ export default function App() {
             resources={mapResources}
           />
 
-          {/* GPS Loading Overlay */}
-          {gpsLoading && !userCoords && (
+          {/* GPS Loading Overlay (Only if not falling back) */}
+          {gpsLoading && !effectiveCoords && !useFallback && (
             <div className={styles.gpsOverlay}>
               <div className={styles.gpsCard}>
                 <div className={styles.gpsSpinner} />
                 <div className={styles.gpsInfo}>
                   <span>Acquiring GPS location...</span>
                   <button 
-                    onClick={() => handleDestinationSelect({ coords: [-73.9857, 40.7484], place_name: 'NYC Fallback' })} 
+                    onClick={() => setUseFallback(true)} 
                     className={styles.skipBtn}
                   >
                     Skip & use default location
