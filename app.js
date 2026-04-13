@@ -108,10 +108,25 @@ function renderHazards() {
     el.className = 'hazard-marker';
     el.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
     
-    new mapboxgl.Marker(el)
+    const marker = new mapboxgl.Marker(el)
       .setLngLat(h.coords)
-      .setPopup(new mapboxgl.Popup().setHTML(`<strong>${h.name}</strong><br>${h.description}`))
       .addTo(map);
+
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 25,
+      className: 'hazard-popup'
+    }).setHTML(`
+      <div style="padding: 4px;">
+        <div style="color: ${color}; font-weight: 800; font-size: 11px; margin-bottom: 4px; letter-spacing: 0.05em;">${h.severity} ALERT</div>
+        <div style="font-weight: 700; font-size: 14px; margin-bottom: 2px;">${h.name}</div>
+        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4;">${h.description}</div>
+      </div>
+    `);
+
+    el.addEventListener('mouseenter', () => popup.setLngLat(h.coords).addTo(map));
+    el.addEventListener('mouseleave', () => popup.remove());
   });
 }
 
@@ -164,6 +179,10 @@ async function calculateSafeRoute(destination) {
         <span class="route-safety">98% SAFE</span>
       </div>
       <div class="route-meta">12 mins • 3.2 km • Zero Hazards</div>
+      <div class="route-details">
+        <div class="detail-row"><span>Elevated Terrain</span><span class="val">+15%</span></div>
+        <div class="detail-row"><span>Hazard Distance</span><span class="val">1.2km</span></div>
+      </div>
     </div>
     <div class="route-option glass" onclick="selectRoute(1)">
       <div class="route-header">
@@ -171,6 +190,10 @@ async function calculateSafeRoute(destination) {
         <span class="route-safety" style="color: var(--accent-warning)">72% SAFE</span>
       </div>
       <div class="route-meta">9 mins • 2.8 km • Near Flood Zone</div>
+      <div class="route-details">
+        <div class="detail-row"><span>Slope Risk</span><span class="val">Moderate</span></div>
+        <div class="detail-row"><span>Hazard Distance</span><span class="val">0.2km</span></div>
+      </div>
     </div>
   `;
 
@@ -299,6 +322,20 @@ function setupEventListeners() {
     updatePredictions(parseInt(e.target.value));
   });
 
+  // Settings & Offline
+  document.getElementById('settings-btn').addEventListener('click', () => {
+    document.getElementById('settings-modal').classList.remove('hidden');
+    loadOfflineStatus();
+  });
+  
+  document.getElementById('settings-close').addEventListener('click', () => {
+    document.getElementById('settings-modal').classList.add('hidden');
+  });
+
+  document.querySelectorAll('.download-btn').forEach(btn => {
+    btn.addEventListener('click', () => simulateDownload(btn));
+  });
+
   // SOS
   document.getElementById('sos-btn').addEventListener('click', startSOS);
   document.getElementById('modal-cancel').addEventListener('click', () => {
@@ -308,6 +345,36 @@ function setupEventListeners() {
   document.getElementById('modal-confirm').addEventListener('click', () => {
     clearInterval(sosTimer);
     activateSOS();
+  });
+}
+
+function simulateDownload(btn) {
+  const region = btn.dataset.region;
+  let progress = 0;
+  btn.disabled = true;
+  btn.innerText = '0%';
+  
+  const interval = setInterval(() => {
+    progress += Math.floor(Math.random() * 10) + 5;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      btn.innerText = 'SAVED';
+      btn.style.borderColor = 'var(--accent-safe)';
+      localStorage.setItem(`offline_${region}`, 'true');
+    } else {
+      btn.innerText = `${progress}%`;
+    }
+  }, 200);
+}
+
+function loadOfflineStatus() {
+  document.querySelectorAll('.download-btn').forEach(btn => {
+    const region = btn.dataset.region;
+    if (localStorage.getItem(`offline_${region}`) === 'true') {
+      btn.innerText = 'SAVED';
+      btn.style.borderColor = 'var(--accent-safe)';
+    }
   });
 }
 
@@ -342,6 +409,32 @@ function updateSidebar() {
   // Logic for dynamic updates
 }
 
+// --- Pillar 2+: Real-time Rerouting Simulation ---
+function simulateReroute() {
+  const routeInfo = document.getElementById('route-info');
+  routeInfo.classList.remove('hidden');
+  routeInfo.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px; color: var(--accent-warning);">
+      <span class="live-pulse" style="background: var(--accent-warning);"></span>
+      <span style="font-size: 12px; font-weight: 700;">CONDITION CHANGED: CALCULATING SAFER PATH...</span>
+    </div>
+  `;
+
+  setTimeout(() => {
+    calculateSafeRoute([-73.96, 40.77]);
+    routeInfo.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px; color: var(--accent-safe);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="font-size: 12px; font-weight: 700;">NEW SAFE ROUTE OPTIMIZED</span>
+      </div>
+    `;
+    setTimeout(() => routeInfo.classList.add('hidden'), 3000);
+  }, 2000);
+}
+
 // --- Start ---
 initMap();
 setupEventListeners();
+
+// Simulate a reroute event after 15 seconds for demonstration
+setTimeout(simulateReroute, 15000);

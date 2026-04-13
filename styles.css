@@ -424,3 +424,112 @@ input[type=range] {
   #sidebar { width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); }
   .search-bar { width: calc(100vw - 40px); }
 }
+
+/* --- Phase 2: Advanced UI --- */
+
+/* Tab Transitions */
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Route Details & Metrics */
+.route-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.detail-row .val {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.route-option {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.route-option:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border);
+}
+
+.route-option.active {
+  background: var(--accent-safe-dim);
+  border-color: var(--accent-safe);
+}
+
+.route-safety {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-safe);
+}
+
+/* Offline Regions */
+.region-item {
+  transition: var(--transition);
+}
+
+.region-item:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-strong);
+}
+
+.download-btn {
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.download-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Settings Modal Specifics */
+#settings-modal .modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.icon-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}

@@ -124,6 +124,39 @@
     </div>
   </div>
 
+  <!-- Settings & Offline Modal -->
+  <div id="settings-modal" class="hidden">
+    <div id="settings-overlay" class="modal-overlay"></div>
+    <div class="modal-content glass">
+      <h2 class="modal-title">System Settings</h2>
+      
+      <div class="sidebar-section" style="text-align: left;">
+        <div class="section-title">OFFLINE MAP REGIONS</div>
+        <div id="offline-regions-list">
+          <div class="region-item glass" style="display:flex; justify-content:space-between; align-items:center; padding: 12px; margin-bottom: 8px; border-radius: 8px;">
+            <span>New York City (Northeast)</span>
+            <button class="download-btn glass" data-region="nyc" style="padding: 4px 12px; font-size: 11px; border-radius: 4px;">DOWNLOAD</button>
+          </div>
+          <div class="region-item glass" style="display:flex; justify-content:space-between; align-items:center; padding: 12px; margin-bottom: 8px; border-radius: 8px;">
+            <span>California (Coastal)</span>
+            <button class="download-btn glass" data-region="ca" style="padding: 4px 12px; font-size: 11px; border-radius: 4px;">DOWNLOAD</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section" style="text-align: left;">
+        <div class="section-title">EMERGENCY PROFILE</div>
+        <div class="glass" style="padding: 12px; border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+          <p><strong>Identity:</strong> Nishkarsh Sharma</p>
+          <p><strong>Blood Type:</strong> A+</p>
+          <p><strong>Contacts:</strong> Emergency Response Team</p>
+        </div>
+      </div>
+
+      <button id="settings-close" class="glass" style="width: 100%; padding: 12px; margin-top: 12px; border-radius: 8px;">CLOSE</button>
+    </div>
+  </div>
+
   <!-- SOS Confirmation Modal -->
   <div id="modal" class="hidden">
     <div id="modal-overlay"></div>
