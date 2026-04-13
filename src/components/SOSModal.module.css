@@ -1,0 +1,68 @@
+.overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  position: relative;
+  width: 420px;
+  padding: 40px 32px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: 0 32px 80px rgba(239,68,68,0.2), 0 16px 48px rgba(0,0,0,0.8);
+  border-color: rgba(239,68,68,0.2);
+  overflow: hidden;
+}
+
+.pulseRing {
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  border: 2px solid rgba(239,68,68,0.2);
+  animation: ringPulse 2s ease-in-out infinite;
+}
+@keyframes ringPulse { 0%,100% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1); opacity: 1; } }
+
+.icon { margin-bottom: 16px; }
+.activatedIcon { margin-bottom: 16px; animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+.title { font-size: 20px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 12px; }
+.body { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
+
+.countdown {
+  font-size: 56px; font-weight: 900; color: var(--accent-hazard);
+  line-height: 1; margin-bottom: 28px;
+  animation: countPulse 1s ease infinite;
+}
+@keyframes countPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+.actions { display: flex; gap: 12px; }
+
+.cancelBtn {
+  flex: 1; padding: 13px; border-radius: var(--radius-md);
+  background: var(--bg-tertiary); border: 1px solid var(--border);
+  color: var(--text-primary); font-size: 13px; font-weight: 700;
+  transition: var(--transition);
+}
+.cancelBtn:hover { background: var(--bg-secondary); }
+
+.confirmBtn {
+  flex: 2; padding: 13px; border-radius: var(--radius-md);
+  background: var(--accent-hazard); border: none;
+  color: #fff; font-size: 13px; font-weight: 900; letter-spacing: 0.04em;
+  box-shadow: 0 8px 24px rgba(239,68,68,0.4); transition: var(--transition);
+}
+.confirmBtn:hover { background: #dc2626; }
+
+.coordBadge {
+  display: inline-block; background: var(--bg-tertiary);
+  border: 1px solid var(--border); border-radius: var(--radius-full);
+  padding: 6px 14px; font-size: 12px; font-weight: 600; font-family: monospace;
+  color: var(--accent-safe); margin-top: 8px;
+}

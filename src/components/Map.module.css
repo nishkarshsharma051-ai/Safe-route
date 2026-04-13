@@ -1,0 +1,47 @@
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.hazardMarker {
+  position: relative;
+  cursor: pointer;
+  filter: drop-shadow(0 0 8px var(--color));
+}
+
+.hazardPulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--color);
+  animation: pulse 2s infinite;
+  opacity: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+.resourceMarker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 2px solid #fff;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  cursor: pointer;
+}
+
+:global(.mapboxgl-popup-content) {
+  background: #16161a !important;
+  color: #f0f0f5 !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.8) !important;
+}
+
+:global(.mapboxgl-popup-tip) {
+  border-top-color: rgba(255,255,255,0.07) !important;
+}

@@ -1,0 +1,67 @@
+/* ============================================
+   SafeRoute — Stich Design System
+   ============================================ */
+
+:root {
+  --bg-primary: #060608;
+  --bg-secondary: #0d0d10;
+  --bg-tertiary: #16161a;
+  --bg-glass: rgba(13, 13, 16, 0.75);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.15);
+
+  --text-primary: #f0f0f5;
+  --text-secondary: #9090a0;
+  --text-tertiary: #55556a;
+
+  --accent-safe: #10b981;
+  --accent-safe-dim: rgba(16, 185, 129, 0.12);
+  --accent-hazard: #ef4444;
+  --accent-hazard-dim: rgba(239, 68, 68, 0.12);
+  --accent-warning: #f59e0b;
+  --accent-warning-dim: rgba(245, 158, 11, 0.12);
+  --accent-info: #3b82f6;
+  --accent-info-dim: rgba(59, 130, 246, 0.12);
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.8);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font);
+  overflow: hidden;
+}
+
+button { cursor: pointer; font-family: var(--font); }
+input { font-family: var(--font); }
+
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 10px; }
