@@ -1,0 +1,53 @@
+.overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  width: 460px; max-height: 80vh; overflow-y: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 24px 24px 16px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--bg-glass); backdrop-filter: blur(16px);
+}
+.title { font-size: 18px; font-weight: 800; }
+.closeBtn { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-secondary); width: 32px; height: 32px; border-radius: 50%; font-size: 14px; transition: var(--transition); }
+.closeBtn:hover { color: var(--text-primary); }
+
+.section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.sectionTitle { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: 8px; }
+.sectionDesc { font-size: 12px; color: var(--text-tertiary); line-height: 1.4; }
+
+.regionRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.regionRow:last-child { border-bottom: none; }
+.regionName { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.regionSize { font-size: 11px; color: var(--text-tertiary); }
+
+.savedBadge { font-size: 10px; font-weight: 800; color: var(--accent-safe); border: 1px solid var(--accent-safe); padding: 4px 10px; border-radius: var(--radius-full); }
+.downloadBtn { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; color: var(--text-primary); background: var(--bg-tertiary); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius-full); transition: var(--transition); }
+.downloadBtn:hover { border-color: var(--accent-safe); color: var(--accent-safe); }
+
+.progressWrap { display: flex; align-items: center; gap: 8px; }
+.progressBar { width: 80px; height: 4px; background: var(--bg-tertiary); border-radius: 10px; overflow: hidden; }
+.progressFill { height: 100%; background: var(--accent-info); border-radius: 10px; transition: width 0.3s ease; }
+.progressText { font-size: 11px; font-weight: 700; color: var(--accent-info); width: 28px; text-align: right; }
+
+.profileCard { background: var(--bg-tertiary); border-radius: var(--radius-md); padding: 12px 16px; margin-top: 8px; }
+.profileRow { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.profileRow:last-child { border-bottom: none; }
+.profileLabel { color: var(--text-secondary); }
+.profileValue { color: var(--text-tertiary); font-style: italic; }
+
+.aboutRow { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.aboutRow:last-child { border-bottom: none; }
+.aboutRow span:first-child { color: var(--text-secondary); }
+.aboutRow span:last-child { font-weight: 600; }

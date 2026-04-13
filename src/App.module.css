@@ -1,0 +1,59 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.mapWrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* GPS Acquiring Overlay */
+.gpsOverlay {
+  position: absolute; inset: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(6, 6, 8, 0.6); backdrop-filter: blur(4px);
+}
+
+.gpsCard {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-glass); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 28px; font-size: 15px; font-weight: 600;
+  box-shadow: var(--shadow-lg);
+}
+
+.gpsSpinner {
+  width: 20px; height: 20px;
+  border: 2.5px solid var(--border-strong);
+  border-top-color: var(--accent-safe);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* GPS Toast */
+.toast {
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 50; display: flex; align-items: center; gap: 8px;
+  background: var(--bg-glass); backdrop-filter: blur(12px);
+  border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-full);
+  padding: 8px 18px; font-size: 13px; font-weight: 600; color: var(--accent-safe);
+  box-shadow: var(--shadow-md);
+  animation: slideDown 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+}
+@keyframes slideDown { from { transform: translateX(-50%) translateY(-20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; } }
+
+@media (max-width: 768px) {
+  .main { flex-direction: column; }
+}

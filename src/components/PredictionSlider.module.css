@@ -1,0 +1,22 @@
+.panel {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 20px; border-radius: 999px;
+  z-index: 10; min-width: 380px;
+  box-shadow: var(--shadow-md);
+}
+
+.label { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.icon { display: flex; align-items: center; }
+.liveDot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent-safe);
+  box-shadow: 0 0 6px var(--accent-safe);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.labelText { font-size: 13px; font-weight: 800; min-width: 36px; }
+.forecast { font-size: 9px; font-weight: 800; color: var(--accent-info); letter-spacing: 0.08em; background: var(--accent-info-dim); padding: 2px 6px; border-radius: 4px; }
+
+.slider { flex: 1; accent-color: var(--accent-info); cursor: pointer; min-width: 180px; }
+.right { font-size: 11px; color: var(--text-tertiary); font-weight: 600; flex-shrink: 0; }
