@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeRoute — Emergency Safety & Navigation</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+</head>
+<body>
+
+  <div id="app">
+    <!-- Topbar -->
+    <header id="topbar" class="glass">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span class="brand-name">SafeRoute</span>
+      </div>
+      <div class="topbar-right">
+        <div class="status-indicator">
+          <span class="live-pulse"></span>
+          <span>LIVE TRACKING: NEW YORK</span>
+        </div>
+        <button id="settings-btn" class="icon-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="main">
+      <!-- Map Area -->
+      <div id="map-container">
+        <div id="map"></div>
+        
+        <!-- Overlays -->
+        <div class="map-control-overlay">
+          <div class="search-bar glass">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search for safe destination...">
+          </div>
+          
+          <div id="route-info" class="glass hidden">
+            <!-- Dynamic Route Stats -->
+          </div>
+        </div>
+
+        <!-- Prediction Time Slider -->
+        <div class="prediction-panel glass">
+          <span class="time-label">LIVE</span>
+          <div class="slider-container">
+            <input type="range" id="prediction-slider" min="0" max="72" value="0">
+          </div>
+          <span class="time-label">+72H FORECAST</span>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside id="sidebar" class="glass">
+        <div class="sidebar-header">
+          <div class="tabs">
+            <div class="tab active" data-tab="nav">NAVIGATE</div>
+            <div class="tab" data-tab="alerts">ALERTS</div>
+            <div class="tab" data-tab="resources">RESOURCES</div>
+          </div>
+        </div>
+
+        <div class="sidebar-content">
+          <!-- Navigation Tab Content -->
+          <div id="tab-nav" class="tab-pane active">
+            <div class="sidebar-section">
+              <div class="section-title">SUGGESTED SAFE ROUTES</div>
+              <div id="route-list">
+                <p class="empty-state">Enter a destination to calculate safe routes.</p>
+              </div>
+            </div>
+            
+            <div class="sidebar-section">
+              <div class="section-title">HAZARD PREDICTIONS</div>
+              <div id="prediction-summary" class="alert-card">
+                <div class="alert-header">
+                  <div class="alert-badge">STABLE</div>
+                  <span class="alert-title">No immediate threats nearby.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts Tab Content -->
+          <div id="tab-alerts" class="tab-pane">
+            <div class="sidebar-section">
+              <div class="section-title">ACTIVE HAZARD ALERTS</div>
+              <div id="active-alerts-list">
+                <!-- Alerts will be injected here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Resources Tab Content -->
+          <div id="tab-resources" class="tab-pane">
+            <div class="sidebar-section">
+              <div class="section-title">Verified Resources</div>
+              <div class="resource-grid" id="resource-container">
+                <!-- Resources injected here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SOS Activation (Persistent at Bottom) -->
+        <div class="sos-container">
+          <button id="sos-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            SOS EMERGENCY
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- SOS Confirmation Modal -->
+  <div id="modal" class="hidden">
+    <div id="modal-overlay"></div>
+    <div class="modal-content glass">
+      <div id="sos-pulse-effect"></div>
+      <div class="modal-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hazard)" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h2 class="modal-title" style="margin: 16px 0;">Confirm SOS Alert</h2>
+      <p class="modal-body" style="color: var(--text-secondary); margin-bottom: 24px;">This will immediately notify emergency services and broadcast your precise location to first responders.</p>
+      <div id="sos-timer" style="font-size: 32px; font-weight: 800; margin-bottom: 24px; color: var(--accent-hazard);">5</div>
+      <div class="modal-actions" style="display: flex; gap: 12px;">
+        <button id="modal-cancel" class="glass" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-tertiary); color: #fff;">CANCEL</button>
+        <button id="modal-confirm" style="flex: 2; padding: 12px; border-radius: 8px; border: none; background: var(--accent-hazard); color: #fff; font-weight: 700;">SEND NOW</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
