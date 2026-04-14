@@ -7,28 +7,104 @@ export default function TopBar({ weather, userCoords, onDestinationSelect, onSet
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState('');
+  const [activeIndex, setActiveIndex] = useState(-1);
   const debounceRef = useRef(null);
+
+  const runSearch = async (rawQuery) => {
+    const val = rawQuery.trim();
+    if (!val) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setSearching(false);
+      setSearchError('');
+      setActiveIndex(-1);
+      return;
+    }
+
+    setSearching(true);
+    setSearchError('');
+
+    try {
+      const results = await geocodeSearch(val, userCoords ? [userCoords.lng, userCoords.lat] : null);
+      setSuggestions(results);
+      setShowSuggestions(true);
+      setActiveIndex(results.length > 0 ? 0 : -1);
+      if (results.length === 0) {
+        setSearchError('No matching places found. Try a fuller address, landmark, or coordinates like 28.6139, 77.2090.');
+      }
+    } catch (error) {
+      setSuggestions([]);
+      setShowSuggestions(true);
+      setActiveIndex(-1);
+      setSearchError(error.message || 'Location search failed.');
+    } finally {
+      setSearching(false);
+    }
+  };
 
   const handleInput = (e) => {
     const val = e.target.value;
     setQuery(val);
+    setSearchError('');
+    setActiveIndex(-1);
     clearTimeout(debounceRef.current);
-    if (!val.trim()) { setSuggestions([]); return; }
-    debounceRef.current = setTimeout(async () => {
-      setSearching(true);
-      const results = await geocodeSearch(val, userCoords ? [userCoords.lng, userCoords.lat] : null);
-      setSuggestions(results);
-      setShowSuggestions(true);
-      setSearching(false);
-    }, 300);
+    if (!val.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    debounceRef.current = setTimeout(() => {
+      runSearch(val);
+    }, 280);
   };
 
   const handleSelect = (place) => {
     setQuery(place.place_name);
     setSuggestions([]);
     setShowSuggestions(false);
+    setSearchError('');
+    setActiveIndex(-1);
     onDestinationSelect(place);
   };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setShowSuggestions(true);
+      setActiveIndex((prev) => {
+        if (suggestions.length === 0) return -1;
+        return prev >= suggestions.length - 1 ? 0 : prev + 1;
+      });
+      return;
+    }
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex((prev) => {
+        if (suggestions.length === 0) return -1;
+        return prev <= 0 ? suggestions.length - 1 : prev - 1;
+      });
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (showSuggestions && activeIndex >= 0 && suggestions[activeIndex]) {
+        handleSelect(suggestions[activeIndex]);
+        return;
+      }
+      runSearch(query);
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      setActiveIndex(-1);
+    }
+  };
+
+  useEffect(() => () => clearTimeout(debounceRef.current), []);
 
   return (
     <header className={styles.topbar}>
@@ -48,15 +124,20 @@ export default function TopBar({ weather, userCoords, onDestinationSelect, onSet
           type="text"
           value={query}
           onChange={handleInput}
-          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => (suggestions.length > 0 || searchError) && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          placeholder="Search for a safe destination..."
+          placeholder="Search any place, address, landmark, or coordinates..."
         />
         {searching && <div className={styles.spinner} />}
-        {showSuggestions && suggestions.length > 0 && (
+        {showSuggestions && (
           <ul className={`${styles.suggestions} glass`}>
-            {suggestions.map(s => (
-              <li key={s.id} className={styles.suggestion} onMouseDown={() => handleSelect(s)}>
+            {suggestions.map((s, index) => (
+              <li
+                key={s.id}
+                className={`${styles.suggestion} ${index === activeIndex ? styles.suggestionActive : ''}`}
+                onMouseDown={() => handleSelect(s)}
+              >
                 <div className={styles.suggestionIcon}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </div>
@@ -64,8 +145,15 @@ export default function TopBar({ weather, userCoords, onDestinationSelect, onSet
                   <div className={styles.suggestionName}>{s.name}</div>
                   <div className={styles.suggestionAddr}>{s.place_name}</div>
                 </div>
+                <div className={styles.suggestionMeta}>{s.category}</div>
               </li>
             ))}
+            {!searching && searchError && (
+              <li className={styles.searchFeedback}>{searchError}</li>
+            )}
+            {!searching && !searchError && suggestions.length > 0 && (
+              <li className={styles.searchHint}>Press Enter to route or use arrow keys to choose a place.</li>
+            )}
           </ul>
         )}
       </div>

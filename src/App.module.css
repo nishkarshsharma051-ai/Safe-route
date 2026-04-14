@@ -20,6 +20,65 @@
   overflow: hidden;
 }
 
+.navOverlay {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  max-width: min(420px, calc(100% - 36px));
+  z-index: 25;
+  border-radius: 22px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.32);
+}
+
+.navPrimary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.navLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+  color: rgba(110, 231, 183, 0.85);
+  margin-bottom: 6px;
+}
+
+.navTitle {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.navStats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.navStats span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stopNavBtn {
+  border: none;
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 /* GPS Acquiring Overlay */
 .gpsOverlay {
   position: absolute; inset: 0; z-index: 20;
@@ -68,4 +127,20 @@
 
 @media (max-width: 768px) {
   .main { flex-direction: column; }
+
+  .navOverlay {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    padding: 14px;
+  }
+
+  .navPrimary {
+    flex-direction: column;
+  }
+
+  .navTitle {
+    font-size: 15px;
+  }
 }

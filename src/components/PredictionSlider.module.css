@@ -20,3 +20,28 @@
 
 .slider { flex: 1; accent-color: var(--accent-info); cursor: pointer; min-width: 180px; }
 .right { font-size: 11px; color: var(--text-tertiary); font-weight: 600; flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .panel {
+    left: 12px;
+    right: 12px;
+    bottom: 16px;
+    transform: none;
+    min-width: 0;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .label {
+    min-width: 78px;
+  }
+
+  .forecast,
+  .right {
+    display: none;
+  }
+
+  .slider {
+    min-width: 0;
+  }
+}

@@ -63,14 +63,24 @@ export function useRouting(hazards = []) {
           label: `ROUTE ${r.index + 1}`,
         };
       });
-      // Sort by safety score descending
+
       scored.sort((a, b) => b.safetyScore - a.safetyScore);
-      scored[0].label = 'SAFETY OPTIMIZED';
-      if (scored[1]) {
-        // If the second one is faster but less safe, label it FASTEST
-        const isFaster = scored[1].duration < scored[0].duration;
-        scored[1].label = isFaster ? 'FASTEST ALT.' : 'ALTERNATE ROUTE';
+
+      const fastestDuration = Math.min(...scored.map(route => route.duration));
+
+      scored.forEach((route, index) => {
+        route.label = index === 0 ? 'SAFEST ROUTE' : 'ALTERNATE ROUTE';
+      });
+
+      if (scored[0].duration === fastestDuration) {
+        scored[0].label = 'SAFEST + FASTEST';
+      } else {
+        const fastestRoute = scored.find((route, index) => index !== 0 && route.duration === fastestDuration);
+        if (fastestRoute) {
+          fastestRoute.label = 'FASTEST ROUTE';
+        }
       }
+
       console.log('[Routing] Routes scored and sorted successfully.');
       setRoutes(scored);
       setSelectedIndex(0);

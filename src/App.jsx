@@ -10,11 +10,55 @@ import { useWeather } from './hooks/useWeather';
 import { useRouting } from './hooks/useRouting';
 import styles from './App.module.css';
 
+const DEFAULT_COORDS = { lat: 40.7484, lng: -73.9857 };
+
+function distanceKm(a, b) {
+  const dx = (a.lng - b.lng) * 111 * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180));
+  const dy = (a.lat - b.lat) * 111;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function getNavigationSnapshot(route, coords, hazards) {
+  if (!route?.geometry?.coordinates?.length || !coords) return null;
+
+  const points = route.geometry.coordinates;
+  let nearestIndex = 0;
+  let nearestDistance = Infinity;
+
+  points.forEach(([lng, lat], index) => {
+    const dist = distanceKm(coords, { lat, lng });
+    if (dist < nearestDistance) {
+      nearestDistance = dist;
+      nearestIndex = index;
+    }
+  });
+
+  let remainingDistanceKm = 0;
+  for (let index = nearestIndex; index < points.length - 1; index += 1) {
+    const current = { lng: points[index][0], lat: points[index][1] };
+    const next = { lng: points[index + 1][0], lat: points[index + 1][1] };
+    remainingDistanceKm += distanceKm(current, next);
+  }
+
+  const progress = Math.max(0, Math.min(100, (1 - (remainingDistanceKm / Math.max(Number(route.distanceKm), 0.1))) * 100));
+  const etaMin = Math.max(1, Math.round((route.durationMin || 1) * (remainingDistanceKm / Math.max(Number(route.distanceKm), 0.1))));
+  const alertsAhead = (hazards || []).filter((hazard) =>
+    points.slice(nearestIndex).some(([lng, lat]) => distanceKm({ lat, lng }, { lat: hazard.coords[1], lng: hazard.coords[0] }) < 0.8)
+  );
+
+  return {
+    remainingDistanceKm: remainingDistanceKm.toFixed(1),
+    etaMin,
+    progress: Number(progress.toFixed(0)),
+    offRoute: nearestDistance > 0.18,
+    nearestDistanceKm: nearestDistance,
+    alertsAhead: alertsAhead.slice(0, 3),
+  };
+}
+
 export default function App() {
   // Core state
   const { coords: userCoords, loading: gpsLoading } = useGeolocation();
-  const { weather, hazards, refresh: refreshWeather } = useWeather(userCoords);
-  const routing = useRouting(hazards);
 
   // UI state
   const [sosOpen, setSosOpen] = useState(false);
@@ -29,6 +73,8 @@ export default function App() {
   });
   const [gpsToast, setGpsToast] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navSnapshot, setNavSnapshot] = useState(null);
 
   // Online/offline detection
   useEffect(() => {
@@ -50,7 +96,9 @@ export default function App() {
   }, [gpsLoading, userCoords]);
 
   // Derived Effective Coords
-  const effectiveCoords = userCoords || (useFallback ? { lat: 40.7484, lng: -73.9857 } : null);
+  const effectiveCoords = userCoords || (useFallback ? DEFAULT_COORDS : null);
+  const { weather, hazards, refresh: refreshWeather } = useWeather(effectiveCoords);
+  const routing = useRouting(hazards);
 
   // Show GPS acquired toast once
   useEffect(() => {
@@ -68,7 +116,7 @@ export default function App() {
   }, [refreshWeather]);
 
   const handleDestinationSelect = useCallback(async (place) => {
-    const startCoords = effectiveCoords || { lat: 40.7484, lng: -73.9857 };
+    const startCoords = effectiveCoords || DEFAULT_COORDS;
     routing.calculate(startCoords, place);
   }, [effectiveCoords, routing.calculate]);
 
@@ -76,6 +124,18 @@ export default function App() {
     setSelectedRouteIndex(i);
     routing.setSelectedIndex(i);
   }, [routing.setSelectedIndex]);
+
+  const handleStartNavigation = useCallback((routeIndex = selectedRouteIndex) => {
+    if (!routing.routes[routeIndex]) return;
+    setSelectedRouteIndex(routeIndex);
+    routing.setSelectedIndex(routeIndex);
+    setIsNavigating(true);
+  }, [routing.routes, routing.setSelectedIndex, selectedRouteIndex]);
+
+  const handleStopNavigation = useCallback(() => {
+    setIsNavigating(false);
+    setNavSnapshot(null);
+  }, []);
 
   const handleSOS = () => setSosOpen(true);
   const handleSOSConfirm = (data) => {
@@ -111,23 +171,37 @@ export default function App() {
           id: 'pred-24', name: 'Projected Flash Flood', type: 'flood', severity: 'HIGH',
           description: `Predicted with 82% probability at +${predictionTime}h`,
           recommendation: 'Monitor water levels. Plan evacuation route now.',
-          coords: userCoords ? [userCoords.lng + 0.04, userCoords.lat - 0.03] : [-73.97, 40.75],
+          coords: effectiveCoords ? [effectiveCoords.lng + 0.04, effectiveCoords.lat - 0.03] : [-73.97, 40.75],
           isWeatherDerived: true,
         }] : []),
         ...(predictionTime >= 48 ? [{
           id: 'pred-48', name: 'Wind Storm System', type: 'wind', severity: 'EXTREME',
           description: `High probability event at +${predictionTime}h`,
           recommendation: 'Secure structures. Avoid coastal areas.',
-          coords: userCoords ? [userCoords.lng - 0.05, userCoords.lat + 0.04] : [-74.02, 40.72],
+          coords: effectiveCoords ? [effectiveCoords.lng - 0.05, effectiveCoords.lat + 0.04] : [-74.02, 40.72],
           isWeatherDerived: true,
         }] : []),
       ];
+
+  useEffect(() => {
+    if (!isNavigating) return;
+    const activeRoute = routing.routes[selectedRouteIndex];
+    const snapshot = getNavigationSnapshot(activeRoute, effectiveCoords, visibleHazards);
+    setNavSnapshot(snapshot);
+  }, [isNavigating, routing.routes, selectedRouteIndex, effectiveCoords, visibleHazards]);
+
+  useEffect(() => {
+    if (!routing.routes.length) {
+      setIsNavigating(false);
+      setNavSnapshot(null);
+    }
+  }, [routing.routes.length]);
 
   return (
     <div className={styles.app}>
       <TopBar
         weather={weather}
-        userCoords={userCoords}
+        userCoords={effectiveCoords}
         onDestinationSelect={handleDestinationSelect}
         onSettingsOpen={() => setSettingsOpen(true)}
         isOnline={isOnline}
@@ -136,12 +210,32 @@ export default function App() {
       <div className={styles.main}>
         <div className={styles.mapWrapper}>
           <Map
-            userCoords={userCoords}
+            userCoords={effectiveCoords}
             hazards={visibleHazards}
             routes={routing.routes}
             selectedRouteIndex={selectedRouteIndex}
             resources={mapResources}
+            destination={routing.destination}
           />
+
+          {isNavigating && navSnapshot && (
+            <div className={`${styles.navOverlay} glass`}>
+              <div className={styles.navPrimary}>
+                <div>
+                  <div className={styles.navLabel}>{navSnapshot.offRoute ? 'OFF ROUTE' : 'ACTIVE GUIDANCE'}</div>
+                  <div className={styles.navTitle}>
+                    {navSnapshot.offRoute ? 'Rejoin the highlighted route' : `${navSnapshot.remainingDistanceKm} km remaining`}
+                  </div>
+                </div>
+                <button className={styles.stopNavBtn} onClick={handleStopNavigation}>End</button>
+              </div>
+              <div className={styles.navStats}>
+                <span>{navSnapshot.etaMin} min ETA</span>
+                <span>{navSnapshot.progress}% complete</span>
+                <span>{navSnapshot.alertsAhead.length} alerts ahead</span>
+              </div>
+            </div>
+          )}
 
           {/* GPS Loading Overlay (Only if not falling back) */}
           {gpsLoading && !effectiveCoords && !useFallback && (
@@ -178,9 +272,13 @@ export default function App() {
           routing={routing}
           selectedRouteIndex={selectedRouteIndex}
           onSelectRoute={handleSelectRoute}
+          onStartNavigation={handleStartNavigation}
+          onStopNavigation={handleStopNavigation}
           onSOS={handleSOS}
-          userCoords={userCoords}
+          userCoords={effectiveCoords}
           onResourcesChange={setMapResources}
+          isNavigating={isNavigating}
+          navSnapshot={navSnapshot}
         />
       </div>
 
@@ -188,7 +286,7 @@ export default function App() {
         isOpen={sosOpen}
         onClose={() => setSosOpen(false)}
         onConfirm={handleSOSConfirm}
-        userCoords={userCoords}
+        userCoords={effectiveCoords}
       />
 
       <SettingsModal

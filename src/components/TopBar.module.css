@@ -90,10 +90,45 @@
   border-bottom: 1px solid var(--border);
 }
 
-.suggestion:hover { background: var(--bg-tertiary); }
+.suggestion:hover,
+.suggestionActive { background: var(--bg-tertiary); }
+
+.suggestionIcon {
+  color: var(--accent-info);
+  margin-top: 2px;
+}
+
+.suggestionContent {
+  flex: 1;
+  min-width: 0;
+}
 
 .suggestionName { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
 .suggestionAddr { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px; }
+.suggestionMeta {
+  font-size: 10px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  padding-top: 3px;
+  white-space: nowrap;
+}
+
+.searchFeedback,
+.searchHint {
+  list-style: none;
+  padding: 12px 14px;
+  font-size: 12px;
+}
+
+.searchFeedback {
+  color: #fca5a5;
+}
+
+.searchHint {
+  color: var(--text-tertiary);
+}
 
 .right { display: flex; align-items: center; gap: 12px; margin-left: auto; flex-shrink: 0; }
 
@@ -131,3 +166,33 @@
   color: var(--text-secondary); transition: var(--transition);
 }
 .iconBtn:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+@media (max-width: 1024px) {
+  .weatherBadge {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    height: auto;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .searchWrap {
+    order: 3;
+    max-width: none;
+    width: 100%;
+  }
+
+  .right {
+    margin-left: 0;
+  }
+
+  .suggestionAddr {
+    max-width: 220px;
+  }
+}

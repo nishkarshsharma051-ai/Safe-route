@@ -12,7 +12,8 @@ const SEVERITY_COLOR = { EXTREME: '#ef4444', HIGH: '#f59e0b', MODERATE: '#3b82f6
 
 export default function Sidebar({
   hazards, routes, routing, selectedRouteIndex, onSelectRoute,
-  onSOS, userCoords, onResourcesChange,
+  onSOS, userCoords, onResourcesChange, onStartNavigation, onStopNavigation,
+  isNavigating, navSnapshot,
 }) {
   const [activeTab, setActiveTab] = useState('nav');
   const [resourceType, setResourceType] = useState('shelters');
@@ -38,6 +39,14 @@ export default function Sidebar({
     loadResources(type);
   };
 
+  const selectedRoute = routes[selectedRouteIndex] || null;
+  const openInGoogleMaps = () => {
+    if (!userCoords || !routing.destination) return;
+    const origin = `${userCoords.lat},${userCoords.lng}`;
+    const destination = `${routing.destination.coords[1]},${routing.destination.coords[0]}`;
+    window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <aside className={`${styles.sidebar} glass`}>
       <div className={styles.tabs}>
@@ -57,6 +66,42 @@ export default function Sidebar({
             {routing.error && <div className={styles.errorState}>Route calculation failed. Please try again.</div>}
             {!routing.loading && !routing.destination && (
               <p className={styles.emptyState}>Search for a destination above to calculate safety-optimized routes.</p>
+            )}
+            {isNavigating && navSnapshot && (
+              <div className={styles.navCard}>
+                <div className={styles.navCardTop}>
+                  <div>
+                    <div className={styles.navEyebrow}>{navSnapshot.offRoute ? 'OFF ROUTE' : 'NAVIGATION LIVE'}</div>
+                    <div className={styles.navHeadline}>
+                      {navSnapshot.offRoute ? 'Move back toward the highlighted path.' : 'SafeRoute is tracking your movement.'}
+                    </div>
+                  </div>
+                  <button className={styles.endNavBtn} onClick={onStopNavigation}>End</button>
+                </div>
+                <div className={styles.navMetricRow}>
+                  <div className={styles.navMetric}>
+                    <span className={styles.navMetricLabel}>ETA</span>
+                    <strong>{navSnapshot.etaMin} min</strong>
+                  </div>
+                  <div className={styles.navMetric}>
+                    <span className={styles.navMetricLabel}>Remaining</span>
+                    <strong>{navSnapshot.remainingDistanceKm} km</strong>
+                  </div>
+                  <div className={styles.navMetric}>
+                    <span className={styles.navMetricLabel}>Progress</span>
+                    <strong>{navSnapshot.progress}%</strong>
+                  </div>
+                </div>
+                {navSnapshot.alertsAhead.length > 0 ? (
+                  <div className={styles.navAlertStrip}>
+                    {navSnapshot.alertsAhead.map(alert => (
+                      <span key={alert.id} className={styles.navAlertChip}>{alert.name}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.navSafeStrip}>No immediate hazards detected along the remaining route.</div>
+                )}
+              </div>
             )}
             {!routing.loading && routes.map((r, i) => (
               <div
@@ -91,8 +136,60 @@ export default function Sidebar({
                 {r.nearbyHazards && r.nearbyHazards.length > 0 && i === 0 && (
                   <div className={styles.safetyReason}>Optimized to avoid active {r.nearbyHazards[0].type} zone.</div>
                 )}
+                <div className={styles.routeActions}>
+                  <button
+                    className={`${styles.routeActionBtn} ${styles.primaryAction}`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onStartNavigation(i);
+                    }}
+                  >
+                    {isNavigating && i === selectedRouteIndex ? 'Resume Tracking' : 'Start Route'}
+                  </button>
+                  <button
+                    className={styles.routeActionBtn}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSelectRoute(i);
+                    }}
+                  >
+                    Focus
+                  </button>
+                </div>
               </div>
             ))}
+
+            {!routing.loading && selectedRoute && routing.destination && (
+              <div className={styles.routeDetailCard}>
+                <div className={styles.sectionTitle}>SELECTED ROUTE</div>
+                <div className={styles.routeDetailTop}>
+                  <div>
+                    <div className={styles.routeDestination}>{routing.destination.place_name}</div>
+                    <div className={styles.routeSecondary}>
+                      {selectedRoute.summary || selectedRoute.label} · {selectedRoute.distanceKm} km · {selectedRoute.durationMin} min
+                    </div>
+                  </div>
+                  <button className={styles.googleBtn} onClick={openInGoogleMaps}>Open in Google Maps</button>
+                </div>
+                <div className={styles.stepList}>
+                  {(selectedRoute.steps || []).slice(0, 5).map((step, index) => (
+                    <div key={step.id || index} className={styles.stepItem}>
+                      <div className={styles.stepIndex}>{index + 1}</div>
+                      <div className={styles.stepBody}>
+                        <div className={styles.stepInstruction}>{step.instruction}</div>
+                        <div className={styles.stepMeta}>
+                          {step.distanceText}
+                          {step.durationText ? ` · ${step.durationText}` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {(selectedRoute.steps || []).length > 5 && (
+                    <div className={styles.moreSteps}>+{selectedRoute.steps.length - 5} more steps on route</div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className={styles.sectionTitle} style={{ marginTop: 24 }}>THREAT SUMMARY</div>
             {hazards.length === 0 ? (
