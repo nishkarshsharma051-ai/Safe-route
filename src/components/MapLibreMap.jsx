@@ -31,6 +31,8 @@ const BASEMAP_STYLE = {
   ],
 };
 
+const ROUTE_SLOT_COUNT = 5;
+
 export default function MapLibreMap({ userCoords, hazards, routes, selectedRouteIndex, resources, destination }) {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
@@ -63,6 +65,34 @@ export default function MapLibreMap({ userCoords, hazards, routes, selectedRoute
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
         map.once('load', () => {
+          for (let index = 0; index < ROUTE_SLOT_COUNT; index += 1) {
+            map.addSource(`route-${index}`, {
+              type: 'geojson',
+              data: emptyFeatureCollection(),
+            });
+            map.addLayer({
+              id: `route-casing-${index}`,
+              type: 'line',
+              source: `route-${index}`,
+              layout: { 'line-join': 'round', 'line-cap': 'round', visibility: 'none' },
+              paint: {
+                'line-color': 'rgba(6, 8, 12, 0.82)',
+                'line-width': 10,
+                'line-opacity': 0.82,
+              },
+            });
+            map.addLayer({
+              id: `route-${index}`,
+              type: 'line',
+              source: `route-${index}`,
+              layout: { 'line-join': 'round', 'line-cap': 'round', visibility: 'none' },
+              paint: {
+                'line-color': '#10b981',
+                'line-width': 6,
+                'line-opacity': 0.95,
+              },
+            });
+          }
           setMapError('');
           setMapLoaded(true);
           setupUserLayers(map);
@@ -190,12 +220,17 @@ export default function MapLibreMap({ userCoords, hazards, routes, selectedRoute
     const map = mapRef.current;
 
     const update = () => {
-      const maxRoutes = Math.max(5, routes.length);
-      Array.from({ length: maxRoutes }).forEach((_, index) => {
-        [`route-${index}`, `route-casing-${index}`].forEach((id) => {
-          if (map.getLayer(id)) map.removeLayer(id);
-        });
-        if (map.getSource(`route-${index}`)) map.removeSource(`route-${index}`);
+      Array.from({ length: ROUTE_SLOT_COUNT }).forEach((_, index) => {
+        const source = map.getSource(`route-${index}`);
+        if (source) {
+          source.setData(emptyFeatureCollection());
+        }
+        if (map.getLayer(`route-${index}`)) {
+          map.setLayoutProperty(`route-${index}`, 'visibility', 'none');
+        }
+        if (map.getLayer(`route-casing-${index}`)) {
+          map.setLayoutProperty(`route-casing-${index}`, 'visibility', 'none');
+        }
       });
 
       if (!routes || routes.length === 0) return;
@@ -203,35 +238,24 @@ export default function MapLibreMap({ userCoords, hazards, routes, selectedRoute
       const bounds = new maplibregl.LngLatBounds();
 
       routes.forEach((route, index) => {
+        if (index >= ROUTE_SLOT_COUNT) return;
         const isSelected = index === selectedRouteIndex;
         if (!route.geometry?.coordinates?.length) return;
         route.geometry.coordinates.forEach((point) => bounds.extend(point));
-        map.addSource(`route-${index}`, {
-          type: 'geojson',
-          data: { type: 'Feature', properties: {}, geometry: route.geometry },
-        });
-        map.addLayer({
-          id: `route-casing-${index}`,
-          type: 'line',
-          source: `route-${index}`,
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': isSelected ? 'rgba(6, 8, 12, 0.8)' : 'rgba(255,255,255,0.22)',
-            'line-width': isSelected ? 10 : 6,
-            'line-opacity': 0.8,
-          },
-        });
-        map.addLayer({
-          id: `route-${index}`,
-          type: 'line',
-          source: `route-${index}`,
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': isSelected ? '#10b981' : '#3a3a4a',
-            'line-width': isSelected ? 6 : 3,
-            'line-opacity': isSelected ? 0.9 : 0.5,
-          },
-        });
+        const source = map.getSource(`route-${index}`);
+        if (source) {
+          source.setData({
+            type: 'FeatureCollection',
+            features: [{ type: 'Feature', properties: {}, geometry: route.geometry }],
+          });
+        }
+        map.setLayoutProperty(`route-${index}`, 'visibility', 'visible');
+        map.setLayoutProperty(`route-casing-${index}`, 'visibility', 'visible');
+        map.setPaintProperty(`route-casing-${index}`, 'line-color', isSelected ? 'rgba(6, 8, 12, 0.82)' : 'rgba(255,255,255,0.20)');
+        map.setPaintProperty(`route-casing-${index}`, 'line-width', isSelected ? 10 : 6);
+        map.setPaintProperty(`route-${index}`, 'line-color', isSelected ? '#10b981' : '#475569');
+        map.setPaintProperty(`route-${index}`, 'line-width', isSelected ? 6 : 3);
+        map.setPaintProperty(`route-${index}`, 'line-opacity', isSelected ? 0.95 : 0.58);
       });
 
       if (!bounds.isEmpty()) {
@@ -327,6 +351,13 @@ export default function MapLibreMap({ userCoords, hazards, routes, selectedRoute
       )}
     </div>
   );
+}
+
+function emptyFeatureCollection() {
+  return {
+    type: 'FeatureCollection',
+    features: [],
+  };
 }
 
 function setupUserLayers(map, coords = [-73.9857, 40.7484]) {
