@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#e2e2e5",
+                        "primary-fixed": "#d3e4ff",
+                        "primary-fixed-dim": "#a3c9ff",
+                        "secondary-container": "#cfe6f2",
+                        "tertiary-container": "#990011",
+                        "inverse-primary": "#a3c9ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f6",
+                        "secondary-fixed": "#cfe6f2",
+                        "on-tertiary-container": "#ffa098",
+                        "secondary-fixed-dim": "#b4cad6",
+                        "on-secondary-fixed-variant": "#354a53",
+                        "surface-dim": "#dadadc",
+                        "on-primary-container": "#8abcff",
+                        "on-primary-fixed-variant": "#004882",
+                        "surface-variant": "#e2e2e5",
+                        "background": "#f9f9fc",
+                        "inverse-surface": "#2f3133",
+                        "secondary": "#4c616c",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "surface": "#f9f9fc",
+                        "primary": "#003461",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#071e27",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "inverse-on-surface": "#f0f0f3",
+                        "surface-bright": "#f9f9fc",
+                        "tertiary": "#6e0009",
+                        "surface-tint": "#27609d",
+                        "outline": "#727781",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#c2c6d1",
+                        "surface-container-high": "#e8e8ea",
+                        "on-surface-variant": "#424750",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#410003",
+                        "on-surface": "#1a1c1e",
+                        "on-primary-fixed": "#001c38",
+                        "on-background": "#1a1c1e",
+                        "surface-container": "#eeeef0",
+                        "primary-container": "#004b87",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#526772"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(249, 249, 252, 0.85);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f9f9fc]/85 backdrop-blur-xl shadow-[0_8px_32px_rgba(26,28,30,0.06)] flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#003461] font-['Space_Grotesk']">Aegis Sentinel</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-[#526772] hover:text-[#003461] transition-colors font-medium" href="#">Map View</a>
+<a class="text-[#003461] border-b-2 border-[#003461] pb-1 font-medium" href="#">Threat Analysis</a>
+<a class="text-[#526772] hover:text-[#003461] transition-colors font-medium" href="#">Resources</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#526772] hover:text-[#003461] transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-[#526772] hover:text-[#003461] transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="User Safety Profile" class="w-8 h-8 rounded-full border border-outline-variant/20" data-alt="Professional portrait of a male safety analyst in a clean workspace with soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGtF7oQraQG2MctQDcqi6-kMSNuAeSQCAn3swa9VuNLVO43LfdVnfmO-msUjS9mO78nFw8kIg7FWXrDGyRySsXi4tq4wk-dEIyAJIbxWslBQOLvF2Q38qOQAcEmXqChDHWVEm7gD7N9HBIMtaxLIO84sBiSP1Nj35-YMdzKaWFq3FRjCxTGA46N29vhScCc8W9DCFyRkW2vXxDdiaUarqP_A3hkCLKtYiOX-75wWZyHbIt0Xogdj2LbRCzUAgEbMQZoPIOOrxUHxd9"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 pt-20 bg-[#f3f3f6] flex flex-col gap-2 p-4 z-40 hidden md:flex">
+<div class="mb-6 px-2">
+<h2 class="text-[#003461] font-headline font-bold text-sm tracking-tight">Navigation HUD</h2>
+<p class="text-[10px] text-secondary uppercase tracking-widest font-semibold opacity-70">Operational Status: Nominal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-[#ffffff] text-[#003461] rounded-r-lg shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="psychology_alt" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Threat Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="emergency_home">emergency_home</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Shelters</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="thunderstorm">thunderstorm</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Weather Alerts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Profile</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-4 border-t border-outline-variant/10 pt-6">
+<button class="w-full py-3 bg-tertiary text-on-tertiary rounded-lg font-headline font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+                SOS Emergency
+            </button>
+<div class="flex flex-col gap-1 px-2">
+<a class="flex items-center gap-2 text-[#526772] text-[11px] font-semibold uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="help">help</span> Support
+                </a>
+<a class="flex items-center gap-2 text-[#526772] text-[11px] font-semibold uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span> Logs
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:pl-64 pt-16 min-h-screen">
+<div class="p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+<!-- Hero Analysis Section: Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Main Map Layer -->
+<div class="lg:col-span-8 h-[500px] relative rounded-xl overflow-hidden shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover opacity-60" data-alt="Top-down satellite view of a city map with translucent red heat zones indicating risk areas along a highlighted route" data-location="Tokyo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq0ex-9dZ8pcHBlrEebOLOLQcYDrJ2fNLTSzfEDht-Rp0c3KcZasqq-iXtR54eW-MUmMpEECWny9Vnwhf_ER2vSkYdkw5xwFTj1XiExj6s4D2R4EqkwjiRFVExx6KQjS1Gav0bvLuwKmQFmG9hhJt_z823XziJEfl4X0_OqOD7JxhgG29uQvxh-ohxBOyOqJv0cx6NeRUuBM7TefvaMLEdYImUVy5p0GfpRlgav2evPtKICGj70EjacIKVXxvd3ubnXPiQDSCmEoQV"/>
+<!-- HUD Overlays -->
+<div class="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+<div class="flex justify-between items-start pointer-events-auto">
+<div class="glass-panel p-4 rounded-xl border border-white/20 shadow-lg max-w-xs">
+<h3 class="font-headline font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="route">route</span>
+                                    Route Segment B-12
+                                </h3>
+<p class="text-xs text-secondary mt-1">Status: <span class="text-error font-bold">High Risk Zone</span></p>
+<div class="mt-3 flex gap-2">
+<span class="px-2 py-1 bg-error-container text-on-error-container text-[10px] font-bold rounded">FLOOD RISK</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded">CIVIL ALERT</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 pointer-events-auto">
+<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-primary shadow-lg border border-white/20">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+</button>
+<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-primary shadow-lg border border-white/20">
+<span class="material-symbols-outlined" data-icon="my_location">my_location</span>
+</button>
+</div>
+</div>
+<div class="flex justify-center pointer-events-auto">
+<div class="glass-panel px-6 py-3 rounded-full border border-white/20 shadow-xl flex items-center gap-8">
+<div class="flex flex-col items-center">
+<span class="text-[10px] uppercase font-bold tracking-tighter text-secondary opacity-60">Total Dist.</span>
+<span class="font-headline font-bold text-primary">14.2 km</span>
+</div>
+<div class="w-px h-8 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="text-[10px] uppercase font-bold tracking-tighter text-secondary opacity-60">Est. Time</span>
+<span class="font-headline font-bold text-primary">28 mins</span>
+</div>
+<div class="w-px h-8 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center">
+<span class="text-[10px] uppercase font-bold tracking-tighter text-secondary opacity-60">Global Score</span>
+<span class="font-headline font-bold text-error">42/100</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Insights Panel -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex-1">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-lg text-primary">AI Danger Matrix</h3>
+<span class="material-symbols-outlined text-primary opacity-40" data-icon="query_stats">query_stats</span>
+</div>
+<div class="space-y-6">
+<!-- Circular Score -->
+<div class="relative w-32 h-32 mx-auto">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-tertiary" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="211" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-headline font-bold text-on-surface">42%</span>
+<span class="text-[9px] uppercase font-bold text-secondary">Safety Rating</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-secondary">Environmental Hazards</span>
+<span class="text-sm font-bold text-primary">84% Risk</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[84%]"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-secondary">Infrastructure Integrity</span>
+<span class="text-sm font-bold text-primary">32% Risk</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[32%]"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-secondary">Biological Threats</span>
+<span class="text-sm font-bold text-primary">12% Risk</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[12%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Route Breakdown Section -->
+<div class="space-y-4">
+<h2 class="font-headline font-bold text-2xl text-primary">Segmented Risk Analysis</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Segment Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-transparent hover:border-primary/10 transition-all group">
+<div class="flex justify-between items-start mb-4">
+<span class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary font-bold">01</span>
+<span class="text-[10px] font-bold text-secondary-fixed-dim bg-secondary-container px-2 py-0.5 rounded">STABLE</span>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Urban Core Passage</h4>
+<p class="text-xs text-secondary mb-4">Minimal environmental risks. High visibility area.</p>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-4/5"></div>
+</div>
+<span class="text-[10px] font-bold text-green-600">88%</span>
+</div>
+</div>
+<!-- Segment Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-transparent hover:border-primary/10 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary font-bold">02</span>
+<span class="text-[10px] font-bold text-on-tertiary-container bg-tertiary-container/10 text-tertiary px-2 py-0.5 rounded">CRITICAL</span>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Ravine Corridor</h4>
+<p class="text-xs text-secondary mb-4">High probability of landslide and drainage failure.</p>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-1/4"></div>
+</div>
+<span class="text-[10px] font-bold text-tertiary">24%</span>
+</div>
+</div>
+<!-- Segment Card 3 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-transparent hover:border-primary/10 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary font-bold">03</span>
+<span class="text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded">CAUTION</span>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Industrial Outskirts</h4>
+<p class="text-xs text-secondary mb-4">Low lighting and irregular surface conditions reported.</p>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-yellow-500 h-full w-1/2"></div>
+</div>
+<span class="text-[10px] font-bold text-yellow-600">51%</span>
+</div>
+</div>
+<!-- Segment Card 4 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-transparent hover:border-primary/10 transition-all">
+<div class="flex justify-between items-start mb-4">
+<span class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary font-bold">04</span>
+<span class="text-[10px] font-bold text-secondary-fixed-dim bg-secondary-container px-2 py-0.5 rounded">SECURE</span>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Sanctuary Alpha Zone</h4>
+<p class="text-xs text-secondary mb-4">Target destination. Full operational infrastructure.</p>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[95%]"></div>
+</div>
+<span class="text-[10px] font-bold text-green-600">95%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Heatmap and Chart Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Risk Heatmap Breakdown -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<h3 class="font-headline font-bold text-lg text-primary mb-6">Zone Conflict Heatmap</h3>
+<div class="aspect-video bg-surface-container rounded-lg overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Digital abstract visualization of a city grid with glowing red and orange polygons representing high-intensity danger zones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmvNyLB8hLJAXoklkGBXYTxjcA6sJ3fWfrlUlCSvQzebog7sHiDQmYlkr8TpO0qK12o5F7Vi5uoq2f09tl5Es6npx1cqS5CO2st4qQ7QV-V1aPmJWFHIp4hh_5v6VhoQdogcQOUH91ZSsrImgtZr8Tnk61FDpgl8jZ2JA0k7kvjoT1iwrRzNvebS2QdBe-cKYOk2bviNy1wjvwzXAzmSIpw-fUJUi05og2HHUPCy7FY-jYxNq6UKyUlbhMSKmhvMq4M3XMKd37qghf"/>
+<div class="absolute bottom-4 left-4 glass-panel p-3 rounded-lg text-[10px] font-bold flex gap-4">
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-tertiary"></span> Lethal</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-500"></span> Moderate</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Clear</div>
+</div>
+</div>
+</div>
+<!-- Temporal Prediction Chart -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+<h3 class="font-headline font-bold text-lg text-primary mb-2">Temporal Risk Forecast</h3>
+<p class="text-xs text-secondary mb-8">Predicted threat levels over the next 6 hours</p>
+<div class="relative h-48 flex items-end justify-between gap-2 px-2">
+<!-- Simulated Chart Bars -->
+<div class="flex-1 bg-primary/20 rounded-t h-1/4 relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold">15%</div>
+</div>
+<div class="flex-1 bg-primary/40 rounded-t h-1/3 relative group"></div>
+<div class="flex-1 bg-tertiary/60 rounded-t h-4/5 relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold text-tertiary">82%</div>
+</div>
+<div class="flex-1 bg-tertiary/40 rounded-t h-2/3 relative group"></div>
+<div class="flex-1 bg-primary/30 rounded-t h-2/5 relative group"></div>
+<div class="flex-1 bg-primary/10 rounded-t h-1/6 relative group"></div>
+</div>
+<div class="flex justify-between mt-4 px-2 text-[10px] font-bold text-secondary uppercase tracking-widest">
+<span>12:00</span>
+<span>13:00</span>
+<span>14:00 (Peak)</span>
+<span>15:00</span>
+<span>16:00</span>
+<span>17:00</span>
+</div>
+</div>
+</div>
+<!-- Bottom Action Bar (Contextual) -->
+<div class="sticky bottom-6 left-0 right-0 flex justify-center pointer-events-none">
+<div class="pointer-events-auto glass-panel p-2 rounded-full shadow-2xl flex items-center gap-2 border border-white/20">
+<button class="bg-primary text-on-primary px-6 py-3 rounded-full font-headline font-bold text-sm flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="share_location">share_location</span>
+                        Broadcast Route Status
+                    </button>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-white transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#f9f9fc]/85 backdrop-blur-xl flex items-center justify-around z-50">
+<button class="flex flex-col items-center gap-1 text-[#526772]">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="text-[9px] font-bold uppercase">Map</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#003461]">
+<span class="material-symbols-outlined" data-icon="psychology_alt" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+<span class="text-[9px] font-bold uppercase">Threats</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#526772]">
+<span class="material-symbols-outlined" data-icon="emergency_home">emergency_home</span>
+<span class="text-[9px] font-bold uppercase">Safe</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#526772]">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[9px] font-bold uppercase">Me</span>
+</button>
+</nav>
+</body></html>

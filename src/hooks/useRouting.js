@@ -1,102 +1,148 @@
 import { useState, useCallback } from 'react';
-import { getRoutes } from '../services/mapbox';
 
-/**
- * Calculate safety score for a route based on proximity to hazards.
- */
-function calcSafetyScore(routeCoords, hazards) {
-  if (!hazards || hazards.length === 0) return { score: 98, nearbyHazards: [] };
-  let penalty = 0;
-  const encountered = new Set();
-  
-  routeCoords.forEach(([lng, lat]) => {
-    hazards.forEach(h => {
-      const dlng = lng - h.coords[0];
-      const dlat = lat - h.coords[1];
-      const distDeg = Math.sqrt(dlng * dlng + dlat * dlat);
-      const distKm = distDeg * 111;
-      
-      if (distKm < 0.6) {
-        encountered.add(h.id);
-        penalty += h.severity === 'EXTREME' ? 25 : h.severity === 'HIGH' ? 15 : 8;
-      } else if (distKm < 1.2) {
-        penalty += h.severity === 'EXTREME' ? 10 : 5;
-      }
-    });
-  });
+// Haversine distance helper (km)
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
 
-  const nearbyHazards = hazards.filter(h => encountered.has(h.id));
-  return { 
-    score: Math.max(5, Math.min(99, 98 - penalty)), 
-    nearbyHazards 
-  };
-}
-
-/**
- * Hook for calculating real routes between two points, scored by safety.
- */
-export function useRouting(hazards = []) {
+export function useRouting(hazards) {
   const [routes, setRoutes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [destination, setDestination] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const calculate = useCallback(async (origin, dest) => {
-    console.log('[Routing] Starting calculation for destination:', dest.place_name);
+  const calculate = useCallback(async (start, end) => {
+    if (!start || !end) {
+      if (!start && !end) {
+        setRoutes([]);
+        setDestination(null);
+      }
+      return;
+    }
     setLoading(true);
-    setError(null);
-    setDestination(dest);
+    setDestination(end);
+    
     try {
-      console.log('[Routing] Requesting Mapbox Directions...');
-      const rawRoutes = await getRoutes(
-        [origin.lng, origin.lat],
-        [dest.coords[0], dest.coords[1]]
-      );
-      console.log(`[Routing] Found ${rawRoutes.length} raw routes.`);
-      const scored = rawRoutes.map(r => {
-        const { score, nearbyHazards } = calcSafetyScore(r.geometry.coordinates, hazards);
-        return {
-          ...r,
-          safetyScore: score,
-          nearbyHazards,
-          label: `ROUTE ${r.index + 1}`,
-        };
-      });
+      const resp = await fetch(`https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=geojson&alternatives=true`);
+      const data = await resp.json();
+      
+      if (data.routes) {
+        const processedRoutes = data.routes.map((r, i) => {
+          let modHazCount = 0;
+          let highHazCount = 0;
+          let critHazCount = 0;
+          
+          const coords = r.geometry.coordinates;
+          
+          // Sample coordinates to avoid heavy perf hit on long routes
+          const sampleStep = Math.max(1, Math.floor(coords.length / 50));
+          
+          for (let j = 0; j < coords.length; j += sampleStep) {
+            const [pLng, pLat] = coords[j];
+            hazards.forEach(h => {
+              const [hLng, hLat] = h.coords;
+              const dist = getDistance(pLat, pLng, hLat, hLng);
+              if (dist < 0.8) {
+                if (h.severity === 'CRITICAL') critHazCount++;
+                else if (h.severity === 'HIGH') highHazCount++;
+                else modHazCount++;
+              }
+            });
+          }
 
-      scored.sort((a, b) => b.safetyScore - a.safetyScore);
+          // Generate segments for differentiated map coloring
+          const dangerSegments = [];
+          if (coords.length > 0) {
+            let currentSegment = { points: [coords[0]], isDanger: false };
+            
+            for (let j = 1; j < coords.length; j++) {
+              const [pLng, pLat] = coords[j];
+              const isInDanger = hazards.some(h => {
+                const [hLng, hLat] = h.coords;
+                return getDistance(pLat, pLng, hLat, hLng) < 0.8;
+              });
 
-      const fastestDuration = Math.min(...scored.map(route => route.duration));
+              if (isInDanger === currentSegment.isDanger) {
+                currentSegment.points.push(coords[j]);
+              } else {
+                dangerSegments.push(currentSegment);
+                // Duplicate last point to avoid gaps
+                currentSegment = { points: [coords[j-1], coords[j]], isDanger: isInDanger };
+              }
+            }
+            dangerSegments.push(currentSegment);
+          }
 
-      scored.forEach((route, index) => {
-        route.label = index === 0 ? 'SAFEST ROUTE' : 'ALTERNATE ROUTE';
-      });
+          const distanceKm = r.distance / 1000;
+          return {
+            ...r,
+            id: `route-${i}`,
+            distanceKm: distanceKm.toFixed(1),
+            durationMin: Math.round(r.duration / 60),
+            modHazCount,
+            highHazCount,
+            critHazCount,
+            rawDistance: distanceKm,
+            dangerSegments
+          };
+        });
 
-      if (scored[0].duration === fastestDuration) {
-        scored[0].label = 'SAFEST + FASTEST';
-      } else {
-        const fastestRoute = scored.find((route, index) => index !== 0 && route.duration === fastestDuration);
-        if (fastestRoute) {
-          fastestRoute.label = 'FASTEST ROUTE';
+        // 2. Transmit batch to the highly-optimized Python API for ML Analytics
+        try {
+          const payload = {
+            routes: processedRoutes.map(r => ({
+              id: r.id,
+              distance_km: r.rawDistance,
+              mod_haz: r.modHazCount,
+              high_haz: r.highHazCount,
+              crit_haz: r.critHazCount
+            }))
+          };
+
+          const mlResp = await fetch('http://127.0.0.1:5000/predict_safety', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          if (!mlResp.ok) throw new Error("Python Pipeline Error");
+          const aiData = await mlResp.json();
+
+          // Map the Python AI scores back to the UI state
+          const fullyScoredRoutes = processedRoutes.map(r => ({
+            ...r,
+            safetyScore: aiData.predictions[r.id] || 50
+          }));
+
+          // Sort strictly by Python's predictive algorithm
+          setRoutes(fullyScoredRoutes.sort((a, b) => b.safetyScore - a.safetyScore));
+          setSelectedIndex(0);
+
+        } catch (apiError) {
+          console.error("Python Server offline or failed:", apiError);
+          // Fallback to purely mechanical scoring if the Python AI cluster spins down
+          const fallbackRoutes = processedRoutes.map(r => ({
+            ...r,
+            safetyScore: Math.max(15, 95 - (r.critHazCount * 25) - (r.highHazCount * 10) - (r.modHazCount * 2))
+          }));
+          setRoutes(fallbackRoutes.sort((a, b) => b.safetyScore - a.safetyScore));
+          setSelectedIndex(0);
         }
       }
-
-      console.log('[Routing] Routes scored and sorted successfully.');
-      setRoutes(scored);
-      setSelectedIndex(0);
-    } catch (e) {
-      console.error('[Routing] Error:', e);
-      setError(e.message);
+    } catch (err) {
+      console.error('Routing failure:', err);
     } finally {
       setLoading(false);
     }
   }, [hazards]);
 
-  const clear = useCallback(() => {
-    setRoutes([]);
-    setDestination(null);
-    setError(null);
-  }, []);
-
-  return { routes, loading, error, selectedIndex, setSelectedIndex, calculate, clear, destination };
+  return { routes, destination, loading, selectedIndex, setSelectedIndex, calculate };
 }

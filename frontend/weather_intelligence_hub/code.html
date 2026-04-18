@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aegis Sentinel | Weather Alerts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#e2e2e5",
+                    "primary-fixed": "#d3e4ff",
+                    "primary-fixed-dim": "#a3c9ff",
+                    "secondary-container": "#cfe6f2",
+                    "tertiary-container": "#990011",
+                    "inverse-primary": "#a3c9ff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f3f3f6",
+                    "secondary-fixed": "#cfe6f2",
+                    "on-tertiary-container": "#ffa098",
+                    "secondary-fixed-dim": "#b4cad6",
+                    "on-secondary-fixed-variant": "#354a53",
+                    "surface-dim": "#dadadc",
+                    "on-primary-container": "#8abcff",
+                    "on-primary-fixed-variant": "#004882",
+                    "surface-variant": "#e2e2e5",
+                    "background": "#f9f9fc",
+                    "inverse-surface": "#2f3133",
+                    "secondary": "#4c616c",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb3ac",
+                    "surface": "#f9f9fc",
+                    "primary": "#003461",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#071e27",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#930010",
+                    "inverse-on-surface": "#f0f0f3",
+                    "surface-bright": "#f9f9fc",
+                    "tertiary": "#6e0009",
+                    "surface-tint": "#27609d",
+                    "outline": "#727781",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#c2c6d1",
+                    "surface-container-high": "#e8e8ea",
+                    "on-surface-variant": "#424750",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#410003",
+                    "on-surface": "#1a1c1e",
+                    "on-primary-fixed": "#001c38",
+                    "on-background": "#1a1c1e",
+                    "surface-container": "#eeeef0",
+                    "primary-container": "#004b87",
+                    "on-error-container": "#93000a",
+                    "on-secondary-container": "#526772"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-[#f9f9fc]/85 backdrop-blur-xl shadow-[0_8px_32px_rgba(26,28,30,0.06)] flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#003461] font-['Space_Grotesk']">Aegis Sentinel</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-[#526772] hover:text-[#003461] transition-colors font-medium" href="#">Dashboard</a>
+<a class="text-[#526772] hover:text-[#003461] transition-colors font-medium" href="#">Threat Analysis</a>
+<a class="text-[#526772] hover:text-[#003461] transition-colors font-medium" href="#">Shelters</a>
+<a class="text-[#003461] border-b-2 border-[#003461] pb-1 font-medium" href="#">Weather Alerts</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#526772] hover:text-[#003461] transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-[#526772] hover:text-[#003461] transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Safety Profile" data-alt="Close-up professional portrait of a safety officer in a high-tech environment with soft blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBaDHK7nSQxvAAHzPyeeiCHAMBEgFFDOEVaOFIJEPwgFFUXtkiSuiiZBKH7AY_QByOdVRrlEG4nKvV0jSGLabip0KffxGPUWbTBI2G8bAz7z359N7H8D78pSNM4IkPL3ExfhgWkZPdxKABIFBO0lILuX-2NnGpIld-1aNC20q2AgB3SPbQcB9GZx0ZNuJxnJyz6PfX0s-zNBZ2Rq64xMzWlOeC4r9Ucm9Soxbj3C3AEGaovlyygMAPINvO5iVCwwawnjWeNYWCsITB"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar Shell (Desktop) -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 pt-20 flex-col gap-2 p-4 bg-[#f3f3f6] z-40">
+<div class="mb-6 px-2">
+<h3 class="font-['Inter'] uppercase tracking-wider text-[11px] font-bold text-secondary">Navigation HUD</h3>
+<p class="text-[10px] text-outline">Operational Status: Nominal</p>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 p-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="psychology_alt">psychology_alt</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Threat Analysis</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="emergency_home">emergency_home</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Shelters</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-[#ffffff] text-[#003461] rounded-r-lg shadow-sm translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="thunderstorm">thunderstorm</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Weather Alerts</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-[#526772] hover:bg-[#e8e8ea] transition-all hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-['Inter'] uppercase tracking-wider text-[11px] font-semibold">Profile</span>
+</a>
+</div>
+<div class="mt-auto border-t border-transparent pt-4">
+<button class="w-full py-3 px-4 bg-[#6e0009] text-white rounded-xl flex items-center justify-center gap-2 font-bold text-sm tracking-wide mb-4">
+<span class="material-symbols-outlined text-sm" data-icon="emergency">emergency</span>
+                SOS Emergency
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 p-2 text-[#526772] hover:bg-[#e8e8ea] transition-all text-[11px] font-semibold uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 p-2 text-[#526772] hover:bg-[#e8e8ea] transition-all text-[11px] font-semibold uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+                    Logs
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-16 md:pl-64 min-h-screen">
+<div class="p-6 lg:p-8 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline text-4xl font-bold tracking-tight text-primary mb-2">Weather Alerts</h1>
+<p class="text-secondary max-w-2xl">Current operational meteorological hazards and atmospheric threat monitoring for your designated zones.</p>
+</div>
+<div class="flex gap-3">
+<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-error"></span> Live Radar Active
+                    </span>
+<span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-xs font-semibold">
+                        Updated 2m ago
+                    </span>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Radar Map Section (Primary Data Layer) -->
+<div class="lg:col-span-8 h-[600px] relative rounded-xl overflow-hidden shadow-sm group">
+<div class="absolute inset-0 bg-surface-container">
+<img alt="Weather Radar Map" class="w-full h-full object-crop grayscale-[0.3] brightness-[0.8]" data-alt="High-resolution digital weather radar map showing storm cells with colorful precipitation echoes over a modern dark topography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy5gY-09F245HtBoK9qLQ3XfrzflfReM58vmHNIKcgD-SS3l8bgI-QRLA0HRxLP1yuY1C7byF3WuceI_Msp_pBzsiC2jjTdnIAmoAqU-FLsJMBwmPs1_0qGOtu6SQ0tbJr-MANFZltDgPHRXrfrftpuZ1gJxNNgT2jZ4pFYtn6WVl2PNv9d8U4He6KWiuFZDpu6PVNsofIZuEwyglWBcSRTT4i0rV47LA-XChd56pzr9S6fawmTBKSaq5j8pLltGG1hxLmyO0twEGD"/>
+</div>
+<!-- Floating Map Controls -->
+<div class="absolute bottom-6 right-6 flex flex-col gap-2">
+<button class="w-10 h-10 rounded-full bg-surface/85 glass-panel text-on-surface flex items-center justify-center shadow-lg hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface/85 glass-panel text-on-surface flex items-center justify-center shadow-lg hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</button>
+</div>
+<div class="absolute top-6 left-6 flex flex-col gap-2">
+<div class="px-4 py-2 rounded-full bg-primary/90 text-white glass-panel flex items-center gap-2 shadow-xl border border-white/10">
+<span class="material-symbols-outlined text-sm" data-icon="my_location">my_location</span>
+<span class="text-xs font-bold tracking-wider uppercase">Region: North Sector</span>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 right-20">
+<div class="p-4 rounded-xl bg-surface/90 glass-panel shadow-2xl border border-white/20">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest">Radar Timeline</span>
+<span class="text-[10px] font-medium text-primary">T - 00:45</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert Feed Section (Secondary Context) -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Severity Summary -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h3 class="text-xs font-bold text-secondary uppercase tracking-widest mb-4">Hazard Inventory</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg border-l-4 border-error">
+<div>
+<p class="text-sm font-bold text-on-surface">Extreme Heat Warning</p>
+<p class="text-[11px] text-outline">Expires in 4h 22m</p>
+</div>
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg border-l-4 border-tertiary">
+<div>
+<p class="text-sm font-bold text-on-surface">Severe Thunderstorm Watch</p>
+<p class="text-[11px] text-outline">Active Zone 4 &amp; 7</p>
+</div>
+<span class="material-symbols-outlined text-tertiary" data-icon="bolt">bolt</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-lg border-l-4 border-secondary">
+<div>
+<p class="text-sm font-bold text-on-surface">Air Quality Advisory</p>
+<p class="text-[11px] text-outline">Regional Scale</p>
+</div>
+<span class="material-symbols-outlined text-secondary" data-icon="air">air</span>
+</div>
+</div>
+</div>
+<!-- Detailed Safety Instruction Card -->
+<div class="bg-primary text-white rounded-xl p-6 shadow-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container opacity-20 -mr-16 -mt-16 rounded-full"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="health_and_safety">health_and_safety</span>
+<h3 class="font-headline text-lg font-bold">Safety Directive</h3>
+</div>
+<p class="text-primary-fixed text-sm mb-6 leading-relaxed">Extreme Heat Warning in effect. Atmospheric temperatures projected to exceed 104°F (40°C).</p>
+<ul class="space-y-3 mb-6">
+<li class="flex items-start gap-3">
+<span class="w-5 h-5 flex items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">01</span>
+<span class="text-xs text-white/90">Avoid outdoor activities between 11:00 AM and 5:00 PM.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="w-5 h-5 flex items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">02</span>
+<span class="text-xs text-white/90">Maintain hydration levels: 500ml per hour minimum for active personnel.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="w-5 h-5 flex items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">03</span>
+<span class="text-xs text-white/90">Locate nearest Cooling Shelter using the Hub map.</span>
+</li>
+</ul>
+<button class="w-full py-3 bg-white text-primary rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-primary-fixed transition-colors">
+                                View Full Protocol
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Details Section -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-5 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="device_thermostat">device_thermostat</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-wider">Ground Temperature</p>
+<p class="font-headline text-xl font-bold text-on-surface">98.4°F</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-5 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="humidity_mid">humidity_mid</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-wider">Relative Humidity</p>
+<p class="font-headline text-xl font-bold text-on-surface">62%</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-5 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="air">air</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-outline uppercase tracking-wider">Wind Velocity</p>
+<p class="font-headline text-xl font-bold text-on-surface">14.2 mph NE</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-16 bg-surface/90 glass-panel shadow-[0_-8px_32px_rgba(26,28,30,0.06)] flex justify-around items-center z-50">
+<button class="flex flex-col items-center gap-1 text-[#526772]">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="text-[10px] font-medium">Map</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#526772]">
+<span class="material-symbols-outlined" data-icon="emergency_home">emergency_home</span>
+<span class="text-[10px] font-medium">Shelters</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#003461]">
+<span class="material-symbols-outlined" data-icon="thunderstorm" style="font-variation-settings: 'FILL' 1;">thunderstorm</span>
+<span class="text-[10px] font-bold">Alerts</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#526772]">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</nav>
+</body></html>
