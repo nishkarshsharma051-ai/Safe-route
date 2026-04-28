@@ -94,13 +94,13 @@ export default function App() {
     routing.calculate(null, null);
   }, [routing.calculate]);
 
-  // Search Logic (Fixing the 9800km global geocoding bug)
-  const handleSearch = useCallback(async (query) => {
+  // Search Logic
+  const handleSearch = useCallback(async (query, mode = 'driving') => {
     if (!query) return null;
     
     // If exact coordinates are passed directly (e.g. from local shelters), bypass global geocoding!
     if (typeof query === 'object' && query.lat && query.lng) {
-      routing.calculate(userCoords, query);
+      routing.calculate(userCoords, query, mode);
       setActiveView('dashboard');
       return query;
     }
@@ -118,7 +118,7 @@ export default function App() {
           lng: parseFloat(data[0].lon),
           name: data[0].display_name
         };
-        routing.calculate(userCoords, result);
+        routing.calculate(userCoords, result, mode);
         setActiveView('dashboard'); // Switch to maps to show route
         return result;
       }

@@ -14,37 +14,37 @@ export default function AnalysisView({ userCoords, hazards }) {
           {/* HUD Overlays */}
           <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-8 z-40">
             <div className="flex justify-between items-start pointer-events-auto">
-              <div className="glass-panel p-6 rounded-2xl shadow-2xl max-w-sm border border-white/20">
+              <div className="glass-panel p-6 rounded-2xl shadow-xl max-w-sm border border-outline-variant/10">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                     <Radar className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-headline font-bold text-primary text-lg leading-none">Strategic Overview</h3>
-                    <p className="text-[10px] text-secondary font-bold uppercase tracking-widest mt-1">Grid Sector Delta-7</p>
+                    <h3 className="font-headline font-semibold text-primary text-lg leading-none">Regional Safety</h3>
+                    <p className="text-xs text-secondary font-medium mt-1">Current Location</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-4">
-                  <span className="px-2 py-1 bg-error text-white text-[9px] font-bold rounded uppercase tracking-tighter">PHASE 1: THREAT DETECTED</span>
-                  <span className={`px-2 py-1 bg-surface-container text-secondary text-[9px] font-bold rounded uppercase tracking-tighter ${hazards.length > 0 ? '' : 'hidden'}`}>LIVE SIGNAL</span>
+                  <span className="px-2 py-1 bg-error text-white text-[10px] font-bold rounded uppercase tracking-tighter">ELEVATED RISK</span>
+                  <span className={`px-2 py-1 bg-surface-container text-secondary text-[10px] font-bold rounded uppercase tracking-tighter ${hazards.length > 0 ? '' : 'hidden'}`}>LIVE SIGNAL</span>
                 </div>
               </div>
             </div>
             
             <div className="flex justify-center pointer-events-auto">
-              <div className="glass-panel px-8 py-4 rounded-full border border-white/30 shadow-2xl flex items-center gap-10">
+              <div className="glass-panel px-8 py-4 rounded-full border border-outline-variant/10 shadow-lg flex items-center gap-10">
                 <div className="flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold tracking-[0.1em] text-secondary opacity-60">Monitored Area</span>
+                  <span className="text-xs font-semibold text-secondary opacity-80">Monitored Area</span>
                   <span className="font-headline font-bold text-primary text-lg">5.0 KM</span>
                 </div>
                 <div className="w-px h-8 bg-outline-variant/30"></div>
                 <div className="flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold tracking-[0.1em] text-secondary opacity-60">Hazard Nodes</span>
+                  <span className="text-xs font-semibold text-secondary opacity-80">Alerts</span>
                   <span className="font-headline font-bold text-primary text-lg">{hazards.length}</span>
                 </div>
                 <div className="w-px h-8 bg-outline-variant/30"></div>
                 <div className="flex flex-col items-center">
-                  <span className="text-[9px] uppercase font-bold tracking-[0.1em] text-secondary opacity-60">Local Safety Score</span>
+                  <span className="text-xs font-semibold text-secondary opacity-80">Local Safety Score</span>
                   <span className={`font-headline font-bold text-lg ${hazards.length > 2 ? 'text-error' : 'text-primary'}`}>42/100</span>
                 </div>
               </div>
@@ -56,7 +56,7 @@ export default function AnalysisView({ userCoords, hazards }) {
         <div className="lg:col-span-4 flex flex-col gap-8">
           <div className="glass-panel p-8 rounded-3xl shadow-xl flex-1 border border-outline-variant/10">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="font-headline font-bold text-xl text-primary leading-none">Danger Matrix</h3>
+              <h3 className="font-headline font-semibold text-xl text-primary leading-none">Safety Analysis</h3>
               <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden">
                 <Activity className="text-primary w-5 h-5" />
               </div>
@@ -77,8 +77,8 @@ export default function AnalysisView({ userCoords, hazards }) {
               <div className="space-y-6 pt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">Environmental Risks</span>
-                    <span className="text-[10px] font-bold text-error">HIGH</span>
+                    <span className="text-xs font-semibold text-secondary">Environmental Risks</span>
+                    <span className="text-xs font-bold text-error">HIGH</span>
                   </div>
                   <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
                     <div className="bg-error h-full w-[84%] rounded-full shadow-[0_0_8px_rgba(186,26,26,0.3)]"></div>
@@ -86,8 +86,8 @@ export default function AnalysisView({ userCoords, hazards }) {
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">Infrastructure Integrity</span>
-                    <span className="text-[10px] font-bold text-primary">STABLE</span>
+                    <span className="text-xs font-semibold text-secondary">Infrastructure Integrity</span>
+                    <span className="text-xs font-bold text-primary">STABLE</span>
                   </div>
                   <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
                     <div className="bg-primary h-full w-[32%] rounded-full shadow-[0_0_8px_rgba(0,52,97,0.3)]"></div>
@@ -102,14 +102,14 @@ export default function AnalysisView({ userCoords, hazards }) {
       {/* Primary Nodes Detail */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-headline font-bold text-2xl text-primary">Live Threat Nodes</h2>
-          <span className="px-3 py-1 bg-surface-container text-secondary text-[10px] font-bold rounded-full uppercase tracking-widest">{hazards.length} IDENTIFIED ANALYTICS</span>
+          <h2 className="font-headline font-semibold text-2xl text-primary">Live Alerts</h2>
+          <span className="px-3 py-1 bg-surface-container text-secondary text-xs font-bold rounded-full">{hazards.length} DETECTED</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {hazards.length === 0 ? (
             <div className="col-span-full border-2 border-dashed border-outline-variant/30 rounded-3xl py-16 flex flex-col items-center justify-center text-center gap-4">
               <ShieldCheck className="text-outline/30 w-12 h-12" />
-              <p className="text-xs font-bold text-secondary uppercase tracking-[0.2em]">No localized threat nodes identified.</p>
+              <p className="text-sm font-semibold text-secondary">No localized warnings active.</p>
             </div>
           ) : (
             hazards.slice(0, 4).map((h, i) => (
@@ -122,11 +122,11 @@ export default function AnalysisView({ userCoords, hazards }) {
                     {h.severity} ALERT
                   </span>
                 </div>
-                <h4 className="font-headline font-bold text-on-surface text-lg mb-2 leading-tight uppercase">{h.name}</h4>
-                <p className="text-[11px] text-on-surface-variant font-medium leading-relaxed opacity-80 mb-6">Threat vector identified in immediate perimeter. Mission focus: avoid direct proximity engagement.</p>
+                <h4 className="font-headline font-semibold text-on-surface text-lg mb-2 leading-tight">{h.name}</h4>
+                <p className="text-xs text-on-surface-variant font-medium leading-relaxed opacity-80 mb-6">Warning generated near your perimeter. Please stay alert and use designated secure routes.</p>
                 <div className="pt-2 border-t border-outline-variant/10">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-[9px] font-bold text-secondary uppercase tracking-widest">Severity Index</span>
+                    <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Severity Index</span>
                     <span className="text-[9px] font-bold text-on-surface">{h.severity === 'HIGH' ? '92%' : '14%'}</span>
                   </div>
                   <div className="w-full h-1 bg-surface-container rounded-full overflow-hidden">

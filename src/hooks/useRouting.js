@@ -19,7 +19,7 @@ export function useRouting(hazards) {
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const calculate = useCallback(async (start, end) => {
+  const calculate = useCallback(async (start, end, mode = 'driving') => {
     if (!start || !end) {
       if (!start && !end) {
         setRoutes([]);
@@ -31,7 +31,7 @@ export function useRouting(hazards) {
     setDestination(end);
     
     try {
-      const resp = await fetch(`https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=geojson&alternatives=true`);
+      const resp = await fetch(`https://router.project-osrm.org/route/v1/${mode}/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=geojson&alternatives=true`);
       const data = await resp.json();
       
       if (data.routes) {
